@@ -1,0 +1,2611 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>C++ 程序设计原理 · 笔记精讲与易错点复习站</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    }
+    body {
+      font-family: var(--font-sans);
+      background-color: #f8fafc;
+      color: #0f172a;
+      overflow-x: hidden;
+    }
+    pre, code {
+      font-family: var(--font-mono);
+    }
+    .code-block {
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: 0.75rem;
+      padding: 0.9rem 1rem;
+      font-size: 0.84rem;
+      line-height: 1.6;
+      overflow-x: auto;
+      position: relative;
+    }
+    .code-block .kw { color: #c084fc; font-weight: 600; }
+    .code-block .ty { color: #38bdf8; }
+    .code-block .str { color: #86efac; }
+    .code-block .num { color: #fbbf24; }
+    .code-block .cmt { color: #94a3b8; font-style: italic; }
+    .code-block .err-line { background: rgba(244, 63, 94, 0.22); display: block; margin: 0 -1rem; padding: 0 1rem; border-left: 3px solid #f43f5e; }
+    .code-block .ok-line { background: rgba(16, 185, 129, 0.18); display: block; margin: 0 -1rem; padding: 0 1rem; border-left: 3px solid #10b981; }
+
+    /* Flashcard 3D flip */
+    .perspective-1000 { perspective: 1000px; }
+    .transform-style-3d { transform-style: preserve-3d; transition: transform 0.5s cubic-bezier(0.4, 0.2, 0.2, 1); }
+    .backface-hidden { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+    .rotate-y-180 { transform: rotateY(180deg); }
+
+    /* Custom subtle scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+    /* Toast animation */
+    @keyframes slideUpFade {
+      from { opacity: 0; transform: translate(-50%, 16px); }
+      to { opacity: 1; transform: translate(-50%, 0); }
+    }
+    .toast-enter { animation: slideUpFade 0.22s ease-out forwards; }
+
+    /* Notebook page turn animation */
+    @keyframes pageTurnIn {
+      from { opacity: 0; transform: translateX(14px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    .page-turn-anim {
+      animation: pageTurnIn 0.26s ease-out forwards;
+    }
+    .notebook-sheet {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-left: 5px solid #4f46e5;
+      border-radius: 1rem;
+      box-shadow: 0 4px 20px -4px rgba(15, 23, 42, 0.06);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- Top Sticky Header -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
+      <!-- Brand -->
+      <div class="flex items-center gap-2.5 min-w-0">
+        <button id="mobileMenuBtn" class="lg:hidden p-2 rounded-lg text-slate-600 hover:bg-slate-100" aria-label="切换目录">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+        <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-sm shadow-sm shrink-0">
+          C++
+        </div>
+        <div class="truncate">
+          <h1 class="text-sm sm:text-base font-bold text-slate-900 truncate">程序设计原理 · 复习站</h1>
+          <p class="text-[11px] text-slate-500 hidden sm:block">基于 32 页手写笔记优化 · 含 11 处原笔记勘误</p>
+        </div>
+      </div>
+
+      <!-- Main Navigation Tabs (Desktop) -->
+      <nav class="hidden md:flex items-center gap-1 bg-slate-100/90 p-1 rounded-xl" id="desktopNav">
+        <button data-tab="notes" class="nav-tab px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5">
+          <i data-lucide="book-open" class="w-4 h-4"></i>翻页笔记
+        </button>
+        <button data-tab="pitfalls" class="nav-tab px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5">
+          <i data-lucide="alert-triangle" class="w-4 h-4"></i>易错避坑
+          <span class="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-rose-100 text-rose-700" id="pitfallNavBadge">18</span>
+        </button>
+        <button data-tab="quiz" class="nav-tab px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5">
+          <i data-lucide="check-circle-2" class="w-4 h-4"></i>刷题自测
+        </button>
+        <button data-tab="flashcards" class="nav-tab px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5">
+          <i data-lucide="layers" class="w-4 h-4"></i>闪卡背诵
+        </button>
+        <button data-tab="labs" class="nav-tab px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5">
+          <i data-lucide="cpu" class="w-4 h-4"></i>可视化实验
+        </button>
+      </nav>
+
+      <!-- Search + Progress -->
+      <div class="flex items-center gap-2 shrink-0">
+        <div class="relative hidden sm:block">
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+          <input id="globalSearchInput" type="text" placeholder="搜知识点/易错点..."
+            class="w-40 lg:w-52 pl-9 pr-3 py-1.5 text-sm bg-slate-100 border border-transparent focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 rounded-lg outline-none transition-all" />
+        </div>
+        <button id="progressSummaryBtn" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-semibold transition-colors" title="查看复习进度">
+          <i data-lucide="trophy" class="w-3.5 h-3.5"></i>
+          <span id="headerProgressText">0%</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Navigation Bar -->
+    <div class="md:hidden border-t border-slate-100 px-2 py-1.5 flex items-center justify-around bg-white overflow-x-auto" id="mobileNav">
+      <button data-tab="notes" class="nav-tab-mobile px-2.5 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap">翻页笔记</button>
+      <button data-tab="pitfalls" class="nav-tab-mobile px-2.5 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap">易错避坑</button>
+      <button data-tab="quiz" class="nav-tab-mobile px-2.5 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap">刷题自测</button>
+      <button data-tab="flashcards" class="nav-tab-mobile px-2.5 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap">闪卡背诵</button>
+      <button data-tab="labs" class="nav-tab-mobile px-2.5 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap">可视化实验</button>
+    </div>
+  </header>
+
+  <!-- Search Results Dropdown / Banner -->
+  <div id="searchResultsPanel" class="hidden max-w-7xl w-full mx-auto px-4 sm:px-6 pt-4">
+    <div class="bg-white border border-indigo-200 rounded-2xl shadow-lg p-4">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-sm font-bold text-slate-800" id="searchResultsTitle">搜索结果</span>
+        <button id="clearSearchBtn" class="text-xs text-slate-500 hover:text-slate-800 flex items-center gap-1">
+          <i data-lucide="x" class="w-3.5 h-3.5"></i>关闭搜索
+        </button>
+      </div>
+      <div id="searchResultsList" class="grid grid-cols-1 md:grid-cols-2 gap-2.5 max-h-72 overflow-y-auto"></div>
+    </div>
+  </div>
+
+  <!-- Main App Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6">
+
+    <!-- ==================== VIEW 1: NOTES ==================== -->
+    <section id="view-notes" class="view-section">
+      <div class="flex flex-col lg:flex-row gap-6 items-start">
+        <!-- Chapter Sidebar -->
+        <aside id="chapterSidebar" class="hidden lg:block w-full lg:w-64 shrink-0 bg-white border border-slate-200 rounded-2xl p-3 lg:sticky lg:top-22 shadow-sm">
+          <div class="px-2 py-1.5 mb-2 flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-400">目录 · 点击直达</span>
+            <span class="text-xs font-semibold text-indigo-600" id="chapterMasteryCount">0/8 已掌握</span>
+          </div>
+          <div id="chapterList" class="space-y-1"></div>
+
+          <div class="mt-4 pt-3 border-t border-slate-100 px-2">
+            <div class="text-xs text-slate-500 mb-1.5 flex justify-between">
+              <span>章节复习进度</span>
+              <span id="chapterPercentText" class="font-semibold text-slate-700">0%</span>
+            </div>
+            <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+              <div id="chapterProgressBar" class="h-full bg-indigo-600 rounded-full transition-all duration-300" style="width:0%"></div>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Chapter Content Area -->
+        <div class="flex-1 min-w-0 w-full space-y-5" id="chapterContentContainer">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 2: PITFALLS ==================== -->
+    <section id="view-pitfalls" class="view-section hidden space-y-5">
+      <div class="bg-gradient-to-r from-rose-600 to-orange-500 rounded-2xl p-5 sm:p-6 text-white shadow-sm">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/20 text-xs font-semibold mb-2">
+              <i data-lucide="shield-alert" class="w-3.5 h-3.5"></i>考前必看 · 避坑指南
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold">高频易错点 & 原笔记勘误汇总</h2>
+            <p class="text-rose-100 text-sm mt-1">逐页核对了你的 32 页手写笔记，标出原笔记中的笔误/概念混淆，并整理了 C++ 考试最常挖坑的 18 个核心陷阱。</p>
+          </div>
+          <div class="bg-white/15 backdrop-blur-sm rounded-xl px-4 py-3 text-center shrink-0">
+            <div class="text-2xl font-extrabold" id="pitfallConqueredStat">0 / 18</div>
+            <div class="text-xs text-rose-100">已攻克陷阱</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter Bar -->
+      <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-3 rounded-xl border border-slate-200">
+        <div class="flex flex-wrap gap-1.5" id="pitfallFilters">
+          <button data-filter="all" class="pitfall-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors">全部 (18)</button>
+          <button data-filter="errata" class="pitfall-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors">🔴 原笔记勘误 (8)</button>
+          <button data-filter="syntax" class="pitfall-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors">语法与运算</button>
+          <button data-filter="pointer" class="pitfall-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors">指针与内存</button>
+          <button data-filter="func" class="pitfall-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors">函数与引用</button>
+          <button data-filter="oop" class="pitfall-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors">类与对象</button>
+        </div>
+        <label class="inline-flex items-center gap-2 text-xs font-medium text-slate-600 cursor-pointer select-none">
+          <input type="checkbox" id="hideConqueredToggle" class="rounded text-indigo-600 focus:ring-indigo-500" />
+          仅看未攻克
+        </label>
+      </div>
+
+      <div id="pitfallsGrid" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
+    </section>
+
+    <!-- ==================== VIEW 3: QUIZ ==================== -->
+    <section id="view-quiz" class="view-section hidden space-y-5">
+      <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2">
+            <i data-lucide="target" class="w-5 h-5 text-indigo-600"></i>C++ 易错点专项刷题
+          </h2>
+          <p class="text-sm text-slate-500 mt-0.5">27 道精选代码追踪与概念辨析题（与各章随堂练习实时同步），答错自动收录进错题本。</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <button data-qmode="all" class="quiz-mode-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors">全部题目 (27)</button>
+          <button data-qmode="wrong" class="quiz-mode-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors">错题本 (<span id="wrongCountBadge">0</span>)</button>
+          <button id="restartQuizBtn" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors flex items-center gap-1">
+            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>重新开始
+          </button>
+        </div>
+      </div>
+
+      <!-- Quiz Card -->
+      <div id="quizContainer" class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-7 shadow-sm max-w-4xl mx-auto"></div>
+    </section>
+
+    <!-- ==================== VIEW 4: FLASHCARDS ==================== -->
+    <section id="view-flashcards" class="view-section hidden space-y-5">
+      <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2">
+            <i data-lucide="layers" class="w-5 h-5 text-indigo-600"></i>核心考点闪卡记忆
+          </h2>
+          <p class="text-sm text-slate-500 mt-0.5">点击卡片或按 <kbd class="px-1.5 py-0.5 bg-slate-100 border border-slate-300 rounded text-xs">Space</kbd> 翻转查看答案，按 <kbd class="px-1.5 py-0.5 bg-slate-100 border border-slate-300 rounded text-xs">←</kbd> <kbd class="px-1.5 py-0.5 bg-slate-100 border border-slate-300 rounded text-xs">→</kbd> 切换卡片。</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <select id="flashcardFilter" class="text-xs font-medium bg-slate-100 border border-slate-200 rounded-lg px-3 py-2 outline-none focus:border-indigo-400">
+            <option value="all">全部闪卡 (24)</option>
+            <option value="unmastered">仅看未掌握</option>
+            <option value="基础与运算">基础与运算</option>
+            <option value="指针与内存">指针与内存</option>
+            <option value="函数与引用">函数与引用</option>
+            <option value="类与对象">类与对象</option>
+          </select>
+          <button id="shuffleCardsBtn" class="px-3 py-2 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center gap-1">
+            <i data-lucide="shuffle" class="w-3.5 h-3.5"></i>随机打乱
+          </button>
+        </div>
+      </div>
+
+      <div class="max-w-2xl mx-auto space-y-4">
+        <div class="flex items-center justify-between text-xs text-slate-500 px-1">
+          <span id="flashcardCounter">第 1 / 24 张</span>
+          <span id="flashcardMasteredStat" class="font-semibold text-emerald-600">已掌握 0 / 24</span>
+        </div>
+
+        <!-- 3D Flip Card -->
+        <div id="flashcardStage" class="perspective-1000 w-full h-80 sm:h-88 cursor-pointer select-none">
+          <div id="flashcardInner" class="relative w-full h-full transform-style-3d">
+            <!-- Front -->
+            <div class="absolute inset-0 backface-hidden bg-white border-2 border-indigo-100 rounded-3xl shadow-md p-6 sm:p-8 flex flex-col justify-between">
+              <div class="flex items-center justify-between">
+                <span id="fcCategoryFront" class="px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-semibold"></span>
+                <span id="fcStatusBadge" class="text-xs font-medium"></span>
+              </div>
+              <div class="text-center my-auto px-2">
+                <p class="text-xs uppercase tracking-wider text-slate-400 mb-2">问题 / 考点</p>
+                <h3 id="fcQuestion" class="text-lg sm:text-xl font-bold text-slate-900 leading-relaxed"></h3>
+              </div>
+              <div class="text-center text-xs text-slate-400 flex items-center justify-center gap-1">
+                <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i>点击翻转查看答案
+              </div>
+            </div>
+            <!-- Back -->
+            <div class="absolute inset-0 backface-hidden rotate-y-180 bg-indigo-950 text-white rounded-3xl shadow-md p-6 sm:p-8 flex flex-col justify-between">
+              <div class="flex items-center justify-between">
+                <span class="px-2.5 py-1 rounded-full bg-white/15 text-indigo-200 text-xs font-semibold">解析与记忆要点</span>
+                <span id="fcPageRef" class="text-xs text-indigo-300"></span>
+              </div>
+              <div id="fcAnswer" class="my-auto text-sm sm:text-base text-slate-100 leading-relaxed overflow-y-auto max-h-48 px-1"></div>
+              <div class="text-center text-xs text-indigo-300">点击正面返回题目</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Flashcard Controls -->
+        <div class="flex items-center justify-between gap-2 pt-2">
+          <button id="prevCardBtn" class="px-4 py-2.5 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm font-semibold flex items-center gap-1.5 shadow-sm">
+            <i data-lucide="chevron-left" class="w-4 h-4"></i>上一张
+          </button>
+          <div class="flex items-center gap-2">
+            <button id="markReviewBtn" class="px-4 py-2.5 rounded-xl bg-amber-50 border border-amber-200 hover:bg-amber-100 text-amber-800 text-sm font-semibold">
+              还需复习
+            </button>
+            <button id="markMasteredBtn" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold shadow-sm">
+              已掌握 ✓
+            </button>
+          </div>
+          <button id="nextCardBtn" class="px-4 py-2.5 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm font-semibold flex items-center gap-1.5 shadow-sm">
+            下一张<i data-lucide="chevron-right" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 5: VISUAL LABS ==================== -->
+    <section id="view-labs" class="view-section hidden space-y-6">
+      <!-- Lab Selector -->
+      <div class="flex flex-wrap gap-2 bg-white p-2 rounded-2xl border border-slate-200">
+        <button data-lab="pointer" class="lab-tab-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all">1. 指针偏移 & *p++ 模拟器</button>
+        <button data-lab="copy" class="lab-tab-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all">2. 内存四区 & 深浅拷贝演示</button>
+        <button data-lab="precedence" class="lab-tab-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all">3. 运算符优先级速查表</button>
+      </div>
+
+      <!-- Lab 1: Pointer Simulator -->
+      <div id="lab-pointer" class="lab-panel bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-sm space-y-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h3 class="text-lg font-bold text-slate-900">指针偏移与解引用单步模拟器（对应 P14–P16）</h3>
+            <p class="text-xs sm:text-sm text-slate-500">直观理解 <code>p + n</code> 移动 <code>n × sizeof(T)</code> 字节、<code>q - p</code> 返回元素个数，以及 <code>*p++</code> vs <code>*++p</code> vs <code>(*p)++</code>。</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <label class="text-xs font-semibold text-slate-600">元素类型:</label>
+            <select id="ptrTypeSelect" class="text-xs font-mono font-semibold bg-slate-100 border border-slate-200 rounded-lg px-2.5 py-1.5">
+              <option value="int">int (4 bytes)</option>
+              <option value="double">double (8 bytes)</option>
+              <option value="char">char (1 byte)</option>
+            </select>
+            <button id="ptrResetBtn" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700">重置</button>
+          </div>
+        </div>
+
+        <!-- Memory Cells Grid -->
+        <div id="ptrMemoryCells" class="grid grid-cols-5 gap-2 sm:gap-3 pt-2"></div>
+
+        <!-- Interactive Expression Buttons -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+          <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-3">
+            <div class="text-xs font-bold text-slate-500 uppercase">点击执行 C++ 表达式</div>
+            <div class="flex flex-wrap gap-2">
+              <button data-ptrop="star_p_post" class="ptr-op-btn px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-mono text-xs font-semibold">val = *p++</button>
+              <button data-ptrop="star_pre_p" class="ptr-op-btn px-3 py-2 rounded-lg bg-violet-600 hover:bg-violet-700 text-white font-mono text-xs font-semibold">val = *++p</button>
+              <button data-ptrop="paren_star_p_post" class="ptr-op-btn px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-mono text-xs font-semibold">val = (*p)++</button>
+              <button data-ptrop="p_minus" class="ptr-op-btn px-3 py-2 rounded-lg bg-slate-700 hover:bg-slate-800 text-white font-mono text-xs font-semibold">p--</button>
+            </div>
+            <div id="ptrLastResult" class="text-xs sm:text-sm bg-white border border-slate-200 rounded-lg p-3 text-slate-700 leading-relaxed">
+              点击上方按钮，观察 <code>p</code> 的地址变化、数组元素变化以及 <code>val</code> 拿到的值！
+            </div>
+          </div>
+
+          <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-2.5 text-xs sm:text-sm">
+            <div class="text-xs font-bold text-slate-500 uppercase">实时状态监控（设 q 固定指向 a[4]）</div>
+            <div class="flex justify-between py-1 border-b border-slate-200">
+              <span class="text-slate-500">当前指针 p 指向：</span>
+              <span id="ptrStatAddr" class="font-mono font-bold text-indigo-700"></span>
+            </div>
+            <div class="flex justify-between py-1 border-b border-slate-200">
+              <span class="text-slate-500">偏移字节数 (p - a) × sizeof(T)：</span>
+              <span id="ptrStatBytes" class="font-mono font-bold text-slate-800"></span>
+            </div>
+            <div class="flex justify-between py-1">
+              <span class="text-slate-500">两指针相减 q - p（元素个数！）：</span>
+              <span id="ptrStatDiff" class="font-mono font-bold text-rose-600"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lab 2: Deep vs Shallow Copy & Memory Layout -->
+      <div id="lab-copy" class="lab-panel hidden bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-sm space-y-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h3 class="text-lg font-bold text-slate-900">深拷贝 vs 浅拷贝 内存模型演示（对应 P22, P28）</h3>
+            <p class="text-xs sm:text-sm text-slate-500">切换模式并点击「模拟析构」，直观看到为什么浅拷贝会导致 <strong>Double Free（堆区重复释放）</strong>崩溃！</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="copyShallowBtn" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all">❌ 浅拷贝（默认）</button>
+            <button id="copyDeepBtn" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all">✅ 深拷贝（自定义）</button>
+          </div>
+        </div>
+
+        <!-- Visual Diagram -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 bg-slate-50 p-4 sm:p-5 rounded-2xl border border-slate-200">
+          <!-- Stack -->
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-indigo-700 bg-indigo-100 px-2.5 py-1 rounded-md">栈区 Stack（自动释放）</span>
+              <span class="text-xs text-slate-400">后进先出：先析构 p2，再析构 p1</span>
+            </div>
+            <div id="stackP1" class="bg-white border-2 border-indigo-200 rounded-xl p-3.5 transition-all">
+              <div class="font-mono text-xs font-bold text-slate-800 mb-1">Person p1 (18, 160)</div>
+              <div class="flex justify-between text-xs font-mono">
+                <span class="text-slate-500">m_Age = 18</span>
+                <span id="p1PtrVal" class="font-bold text-indigo-600">m_Height = 0x0011</span>
+              </div>
+            </div>
+            <div id="stackP2" class="bg-white border-2 border-violet-200 rounded-xl p-3.5 transition-all">
+              <div class="font-mono text-xs font-bold text-slate-800 mb-1">Person p2(p1) // 拷贝构造</div>
+              <div class="flex justify-between text-xs font-mono">
+                <span class="text-slate-500">m_Age = 18</span>
+                <span id="p2PtrVal" class="font-bold text-rose-600">m_Height = 0x0011</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Heap -->
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-amber-700 bg-amber-100 px-2.5 py-1 rounded-md">堆区 Heap（new / delete）</span>
+              <span class="text-xs text-slate-400">程序员手动管理</span>
+            </div>
+            <div id="heapBlock1" class="bg-white border-2 border-amber-300 rounded-xl p-3.5 transition-all">
+              <div class="flex justify-between items-center font-mono text-xs">
+                <span class="font-bold text-amber-700">地址 0x0011</span>
+                <span id="heap1Status" class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 font-semibold">有效 (值: 160)</span>
+              </div>
+              <div class="text-xs text-slate-500 mt-1" id="heap1Owner">由 p1、p2 共同指向 ⚠️</div>
+            </div>
+            <div id="heapBlock2" class="hidden bg-white border-2 border-emerald-300 rounded-xl p-3.5 transition-all">
+              <div class="flex justify-between items-center font-mono text-xs">
+                <span class="font-bold text-emerald-700">地址 0x0022</span>
+                <span id="heap2Status" class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 font-semibold">有效 (值: 160)</span>
+              </div>
+              <div class="text-xs text-slate-500 mt-1">由 p2 独立指向（new int(*p.m_Height)）✓</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div id="copySimLog" class="text-xs sm:text-sm font-medium text-slate-700 bg-slate-100 px-4 py-2.5 rounded-xl flex-1">
+            当前状态：p1 与 p2 均存活。点击右侧按钮按顺序模拟对象析构过程。
+          </div>
+          <div class="flex gap-2">
+            <button id="copyStepBtn" class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold shadow-sm">
+              下一步：析构 p2 →
+            </button>
+            <button id="copyResetBtn" class="px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-semibold">
+              重置演示
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lab 3: Operator Precedence Table -->
+      <div id="lab-precedence" class="lab-panel hidden bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-sm space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h3 class="text-lg font-bold text-slate-900">C++ 常用运算符优先级与结合性速查（由高到低）</h3>
+            <p class="text-xs sm:text-sm text-slate-500">口诀：<strong>括单算移关，与异或逻条，赋逗最低级</strong>（高亮行是考试最常挖坑的优先级！）</p>
+          </div>
+          <input id="precSearchInput" type="text" placeholder="过滤运算符如 ++, &&, ?:" class="text-xs px-3 py-2 bg-slate-100 border border-slate-200 rounded-lg outline-none focus:bg-white focus:border-indigo-400" />
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs sm:text-sm">
+            <thead>
+              <tr class="bg-slate-100 text-slate-600 border-b border-slate-200">
+                <th class="py-2.5 px-3 font-bold">级别</th>
+                <th class="py-2.5 px-3 font-bold">运算符</th>
+                <th class="py-2.5 px-3 font-bold">名称</th>
+                <th class="py-2.5 px-3 font-bold">结合性</th>
+                <th class="py-2.5 px-3 font-bold">高频易错提示</th>
+              </tr>
+            </thead>
+            <tbody id="precTableBody" class="divide-y divide-slate-100"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Progress Modal -->
+  <div id="progressModal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+          <i data-lucide="trophy" class="w-5 h-5 text-indigo-600"></i>我的 C++ 复习进度
+        </h3>
+        <button id="closeProgressModal" class="p-1 rounded-lg hover:bg-slate-100 text-slate-500">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div id="progressModalBody" class="space-y-3 text-sm"></div>
+      <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+        <button id="resetAllProgressBtn" class="text-xs text-rose-600 hover:text-rose-700 font-semibold">清空所有学习记录</button>
+        <button id="closeProgressModalBtn" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold">继续复习</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white text-xs sm:text-sm font-medium px-4 py-2.5 rounded-xl shadow-lg"></div>
+
+  <script>
+    // =========================================================================
+    // 1. STRUCTURED DATA (Optimized & Supplemented from all 32 pages of PDF)
+    // =========================================================================
+
+    const CHAPTERS = [
+      {
+        id: 'ch1',
+        num: '01',
+        title: 'C++ 基础语法、数据类型与 I/O',
+        pages: 'P2–P5, P9',
+        summary: '程序基本结构、注释与书写规范、基本与构造数据类型、常量/变量初始化，以及 iostream 标准输入输出。',
+        errata: [
+          {
+            page: 'P2',
+            title: 'main 函数返回值应为 int 而非 void',
+            detail: '原 PPT 示例写了 void main()，但标准 C++ 规定主函数必须是 int main()，并在末尾 return 0;（现代编译器可省略 return 0，但返回类型不能写 void）。'
+          },
+          {
+            page: 'P3',
+            title: "'\\n' 是换行符，'\\r' 才是回车符",
+            detail: '手写笔记将 \'\\n\' 标为回车符。严格区分：\'\\n\' 是换行符 (LF, ASCII 10)，\'\\r\' 是回车符 (CR, ASCII 13)。'
+          },
+          {
+            page: 'P4',
+            title: '区分「字符串长度」与「存储长度」',
+            detail: '笔记写了“字符串的长度 = 字符个数 + 1”，实际字符串长度 (strlen) 不含 \'\\0\'，占用的内存存储长度 (sizeof) 才是字符个数 + 1。'
+          }
+        ],
+        sections: [
+          {
+            title: '程序骨架与预处理命令',
+            points: [
+              '<strong>注释：</strong><code>//</code> 单行注释；<code>/* ... */</code> 多行注释（补充：多行注释<strong>不能嵌套</strong>）。',
+              '<strong>预处理命令：</strong>以 <code>#</code> 开头（如 <code>#include &lt;iostream&gt;</code>），末尾<strong>绝对不能加分号</strong>。',
+              '<strong>命名空间：</strong><code>using namespace std;</code> 引入标准库命名空间，避免每次写 <code>std::cout</code>。',
+              '<strong>g++ 与 gdb：</strong><code>g++</code> 用于编译 C++ 源码，<code>gdb</code> 用于断点调试。'
+            ],
+            code: `#include <iostream>   // 预处理命令，无分号
+using namespace std;  // 标准命名空间
+
+int main() {          // 标准 C++ 必须返回 int
+    int a = 0, b = 0; // 局部变量养成初始化习惯
+    cin >> a >> b;
+    cout << a << "+" << b << "=" << a + b << "\\n";
+    return 0;
+}`
+          },
+          {
+            title: '基本数据类型与字节数（常见 32/64 位平台）',
+            table: {
+              headers: ['类型', '字节数 (sizeof)', '说明与常见考点'],
+              rows: [
+                ['bool', '1 byte', 'false 为 0，非 0 转为 bool 均为 true（输出为 1）'],
+                ['char / unsigned char', '1 byte', '对应 ASCII 码：\'0\'=48, \'A\'=65, \'a\'=97（大小写差 32）'],
+                ['short / int', '2 / 4 bytes', 'int 范围约 ±2.1×10⁹（超过 21 亿需用 long long）'],
+                ['long long（补充）', '8 bytes', '阶乘、大数求和必用，范围约 ±9.2×10¹⁸'],
+                ['float / double', '4 / 8 bytes', '浮点常量默认 double；加 f（如 3.14f）才是 float']
+              ]
+            },
+            tip: '1 字节 (byte) = 8 比特 (bit)。不同编译器字节数可能略有差异，永远用 sizeof(类型/变量) 获取准确大小。'
+          },
+          {
+            title: '常量、变量与 I/O 流细节',
+            points: [
+              '<strong>字符 vs 字符串：</strong><code>\'a\'</code> 是字符常量占 <strong>1 字节</strong>；<code>"a"</code> 是字符串常量，末尾自动补 <code>\'\\0\'</code>，占 <strong>2 字节</strong>。',
+              '<strong>符号常量 const：</strong><code>const int M = 100;</code> 声明时<strong>必须初始化</strong>，之后不可修改。',
+              '<strong>变量未初始化陷阱：</strong>局部普通变量若不初始化，内存里是<strong>随机垃圾值</strong>（如 -858993460）。',
+              '<strong>endl vs "\\n"：</strong><code>"\\n"</code> 仅换行（轻量高效）；<code>endl</code> = 换行 + <strong>刷新输出缓冲区</strong>。<code>cerr</code> 输出错误信息（无缓冲），<code>clog</code> 输出日志。'
+            ]
+          }
+        ]
+      },
+      {
+        id: 'ch2',
+        num: '02',
+        title: '运算符、表达式与类型转换',
+        pages: 'P6–P8',
+        summary: '算术/复合赋值/自增自减/关系/逻辑/三元/逗号/sizeof 运算符，隐式转换规则与强制类型转换时机。',
+        errata: [
+          {
+            page: 'P7',
+            title: '自增/自减并非“只适用于 int”',
+            detail: '笔记顶部写 ++/-- 只适用于整型数 int，实际上它也广泛用于 char 和指针变量（如 P15 的 p++，指针按元素步长移动）！'
+          },
+          {
+            page: 'P7',
+            title: '避免写出 a += ++a 这类危险表达式',
+            detail: '在 C++11/14 中，同一表达式里既修改又读取同一变量属于未定义行为 (UB)；直到 C++17 才明确右操作数先求值（结果为 8）。考试与工程中应拆成两行写。'
+          }
+        ],
+        sections: [
+          {
+            title: '算术运算与隐式类型转换（分步独立原则）',
+            points: [
+              '<strong>整数除法截断：</strong>两个整数相除直接丢弃小数，如 <code>1 / 5 == 0</code>。解决：写成 <code>1.0 / b</code> 或强转。',
+              '<strong>取余 %：</strong><strong>只能用于整数</strong>，不能用于 <code>float</code> 或 <code>double</code>。',
+              '<strong>子表达式独立转换：</strong>在 <code>a*x + 1/b + (c1+4) + 1.0/b</code> 中，虽然整个表达式最终是 <code>double</code>，但 <code>1/b</code> 仍先按整数除法算得 <code>0</code>！',
+              '<strong>复合赋值右侧整体先算：</strong><code>a *= b + 3</code> 等价于 <code>a = a * (b + 3)</code>；连用 <code>a += b += 3</code> <strong>从右向左</strong>算。'
+            ]
+          },
+          {
+            title: '自增自减、关系、逻辑与短路求值',
+            points: [
+              '<strong>前置 vs 后置：</strong><code>a = ++i</code> 先增后赋；<code>a = i++</code> 先赋后增。操作数必须是变量，不能是 <code>(a+b)++</code>。',
+              '<strong>关系运算符：</strong><code>&lt; &lt;= &gt; &gt;=</code> 优先级高于 <code>== !=</code>。不能用 <code>==</code> 直接比较两个 C 风格字符数组（比的是地址）。',
+              '<strong>逻辑优先级：</strong><code>! &gt; &amp;&amp; &gt; ||</code>（非 &gt; 与 &gt; 或）。',
+              '<strong>短路求值（必考）：</strong><code>A &amp;&amp; B</code> 若 A 为假，B 不执行；<code>A || B</code> 若 A 为真，B 不执行。'
+            ],
+            code: `int a = 0, b = 5;
+if (a != 0 && ++b > 5) { ... }
+// 因为 a != 0 为假，触发 && 短路，++b 根本不执行！此时 b 仍为 5`
+          },
+          {
+            title: '三元、逗号、sizeof 与强制类型转换',
+            points: [
+              '<strong>三元运算符 <code>e1 ? e2 : e3</code>：</strong>右结合！<code>a ? b : c ? d : e</code> 等价于 <code>a ? b : (c ? d : e)</code>。',
+              '<strong>逗号运算符：</strong><strong>优先级最低</strong>，从左向右计算，整体值等于<strong>最后一个表达式</strong>的值。',
+              '<strong>sizeof：</strong>编译期计算，括号内表达式<strong>不会真正执行</strong>（如 <code>sizeof(x++)</code> 不会让 x 加 1）。',
+              '<strong>强转时机：</strong><code>float(a / b)</code> 先整除再转（5/2→2.0）；<code>(float)a / b</code> 先转再除（5.0/2→2.5）。高精度转低精度会丢失数据。'
+            ]
+          }
+        ]
+      },
+      {
+        id: 'ch3',
+        num: '03',
+        title: '程序控制结构：分支与循环',
+        pages: 'P10–P12',
+        summary: '顺序/选择/循环三大骨架，if-else 悬空匹配、switch-case 穿透机制，以及 while / do-while / for 循环对比。',
+        errata: [
+          {
+            page: 'P11',
+            title: 'while 求和代码漏了逗号与分号',
+            detail: '原笔记 int i=0 sum=0; 漏了逗号，{ sum+=i; i++ } 漏了分号；应为 int i = 1, sum = 0; while (i <= 100) { sum += i; i++; }。'
+          },
+          {
+            page: 'P12',
+            title: '阶乘代码 int i, n, long p; 语法错误',
+            detail: '不同数据类型不能用逗号写在同一声明中！必须分号隔开：int i, n; long long p = 1;（且 n! 极易溢出，推荐 long long）。'
+          }
+        ],
+        sections: [
+          {
+            title: 'if-else 与 switch-case 核心陷阱',
+            points: [
+              '<strong>if 后多写分号：</strong><code>if (a &lt; 0); a = -a;</code> 会让 <code>if</code> 控制一个空语句，导致 <code>a = -a;</code> 永远执行！',
+              '<strong>悬空 else 原则：</strong><code>else</code> 永远与<strong>最近且未配对的 <code>if</code></strong> 匹配，无视代码缩进。需要改变归属请加 <code>{}</code>。',
+              '<strong>switch 限制：</strong>条件只能是<strong>整型（含 char）或枚举</strong>，只能做等值判断，不能写范围。',
+              '<strong>case 穿透：</strong>分支缺少 <code>break;</code> 会一路向下执行直到遇到 <code>break</code> 或末尾；<code>default</code> 放中间且无 <code>break</code> 也会向下穿透！'
+            ]
+          },
+          {
+            title: '三大循环对比与适用场景',
+            table: {
+              headers: ['循环类型', '判断时机', '最少执行次数', '高频注意点'],
+              rows: [
+                ['while (条件)', '先判断后执行', '0 次', '循环体内别忘更新条件变量，防死循环'],
+                ['do { ... } while (条件);', '先执行后判断', '1 次', '末尾的分号 ; 绝对不能漏！适合输入合法性校验'],
+                ['for (e1; e2; e3)', '先判断后执行', '0 次', '两个分号不可少；e1 只执行一次，e3 在循环体之后执行']
+              ]
+            },
+            code: `// 正确写法：求 n!（防止溢出用 long long）
+int n;
+long long p = 1;
+cin >> n;
+for (int i = 1; i <= n; i++) {
+    p *= i;
+}
+cout << n << "! = " << p << "\\n";`
+          }
+        ]
+      },
+      {
+        id: 'ch4',
+        num: '04',
+        title: '数组与 C 风格字符串',
+        pages: 'P13',
+        summary: '一维/二维数组定义与下标规则，字符数组与 \'\\0\' 结束符机制，以及数组遍历求最值。',
+        errata: [
+          {
+            page: 'P13',
+            title: "char str[30] = {'c','+','+'}; 其实不会乱码！",
+            detail: '当数组显式指定长度 30 且只初始化前 3 个元素时，C++ 会自动将剩余 27 个元素补 0（即 \'\\0\'）。真正会输出乱码的是未留空位的写法：char str[3] = {\'c\',\'+\',\'+\'}; 或 char str[] = {\'c\',\'+\',\'+\'};。'
+          },
+          {
+            page: 'P13',
+            title: '最值代码中 for 循环变量 i 作用域越界',
+            detail: 'for (int i = 0; i < 10; i++) 定义的 i 只在 for 内有效，后面直接写 i = 1; 会编译报错。应在外层声明 int i; 或在 while 前写 int i = 1;。'
+          }
+        ],
+        sections: [
+          {
+            title: '数组基础与越界风险',
+            points: [
+              '<strong>定义格式：</strong><code>数据类型 数组名[常量表达式];</code>，下标从 <code>0</code> 到 <code>N-1</code>。',
+              '<strong>不检查越界：</strong>访问 <code>a[N]</code> 不会在编译期报错，但会读写非法内存导致数据破坏或崩溃。',
+              '<strong>非字符数组 I/O：</strong><code>int a[5]</code> 不能直接 <code>cin &gt;&gt; a</code> 或 <code>cout &lt;&lt; a</code>（后者会输出首地址），必须循环逐个读写。'
+            ]
+          },
+          {
+            title: '字符数组输入输出与 \'\\0\'',
+            points: [
+              '<strong>整体输入局限：</strong><code>cin &gt;&gt; str</code> 遇到<strong>空格、Tab 或回车</strong>就停止读取；若要读含空格的一整行，需用 <code>cin.getline(str, 80)</code>。',
+              '<strong>整体输出原理：</strong><code>cout &lt;&lt; str</code> 从首地址逐字节打印，直到碰到第一个 <code>\'\\0\'</code> 才停止。',
+              '<strong>初始化差异：</strong>用双引号 <code>"C++"</code> 会自动在末尾补 <code>\'\\0\'</code>；用花括号逐字符写满数组 <code>char s[] = {\'C\',\'+\',\'+\'};</code> 不会补 <code>\'\\0\'</code>，输出会乱码！'
+            ]
+          }
+        ]
+      },
+      {
+        id: 'ch5',
+        num: '05',
+        title: '指针、二维数组与动态内存管理',
+        pages: 'P14–P17, P22',
+        summary: '指针本质与三大铁律、指针算术运算、数组名与行指针、C++ 内存四区以及 new/delete 动态分配。',
+        errata: [],
+        sections: [
+          {
+            title: '指针基础与三大安全铁律',
+            points: [
+              '<strong>核心符号：</strong><code>&amp;</code> 取地址，<code>*</code> 解引用（访问地址里的值）。声明 <code>int *p = &amp;a;</code> 后，<code>p</code> 是地址，<code>*p</code> 等价于 <code>a</code>。',
+              '<strong>铁律 1（类型匹配）：</strong>指针类型决定了每次解引用读几个字节、<code>p+1</code> 跳几个字节，必须与目标类型一致。',
+              '<strong>铁律 2（杜绝野指针）：</strong>指针定义后必须初始化（指向有效变量或 <code>nullptr</code>），绝不解引用未初始化指针。',
+              '<strong>铁律 3（空指针禁解引用）：</strong><code>int *p = nullptr;</code> 表示空指针，对其 <code>*p</code> 会直接导致程序崩溃。'
+            ]
+          },
+          {
+            title: '指针运算与数组/行指针关系',
+            points: [
+              '<strong>地址步长：</strong><code>p + n</code> 实际移动 <code>n × sizeof(T)</code> 字节；两指针相减 <code>q - p</code> 得到的是<strong>元素个数</strong>（非字节数）。',
+              '<strong>高频三胞胎：</strong><code>*p++</code>（先解引用再移指针）、<code>*++p</code>（先移指针再解引用）、<code>(*p)++</code>（指向的值加 1，指针不动）。',
+              '<strong>数组名 vs 指针：</strong><code>ax[i] &lt;=&gt; *(ax + i)</code>，但数组名 <code>ax</code> 是地址常量，<strong>不能 <code>ax++</code></strong>！',
+              '<strong>二维数组行指针：</strong><code>a + 1</code> 移一整行，<code>a[0] + 1</code> 移一个元素。行指针写作 <code>int (*ps)[n];</code>（括号不能少，否则变成指针数组）。'
+            ]
+          },
+          {
+            title: 'C++ 内存四区与 new / delete',
+            table: {
+              headers: ['内存区域', '存放内容', '生命周期与管理方'],
+              rows: [
+                ['代码区', '函数体二进制机器指令', '运行前分配，共享、只读'],
+                ['全局区', '全局变量、static 静态变量、字符串常量、const 全局常量', '运行前分配，程序结束由系统释放'],
+                ['栈区 (Stack)', '局部变量、函数形参、const 局部常量（补充）', '编译器自动分配与释放；严禁返回局部变量地址！'],
+                ['堆区 (Heap)', 'new 申请的动态内存', '程序员用 delete / delete[] 释放，不释放会内存泄漏']
+              ]
+            },
+            code: `int *p = new int(10);      // 单个对象
+delete p; p = nullptr;     // 释放后立即置空，防悬空指针
+
+int *arr = new int[5];     // 动态数组
+delete[] arr; arr = nullptr; // 数组必须配对 delete[] ！`
+          }
+        ]
+      },
+      {
+        id: 'ch6',
+        num: '06',
+        title: '引用、函数基础与函数提高',
+        pages: 'P17–P20, P23–P25',
+        summary: '函数声明与三种传参、递归与作用域、引用本质与左值返回、常量引用、默认参数、占位参数与函数重载。',
+        errata: [],
+        sections: [
+          {
+            title: '函数传参、嵌套与递归',
+            points: [
+              '<strong>三种传参：</strong>值传递（不改实参）、地址传递 <code>int *p</code>（改实参）、引用传递 <code>int &amp;r</code>（改实参且语法简洁）。',
+              '<strong>声明 vs 定义：</strong>函数定义在 <code>main</code> 之后时必须前置声明；声明可省略形参名，定义不能省略。',
+              '<strong>嵌套规则：</strong>函数可以<strong>嵌套调用</strong>，但<strong>不能嵌套定义</strong>。',
+              '<strong>递归两要素：</strong>必须有明确的<strong>终止条件（出口）</strong>和不断缩小的递推关系，否则栈溢出。'
+            ]
+          },
+          {
+            title: '引用的本质与高级用法（P23–P24 重点）',
+            points: [
+              '<strong>本质：</strong><code>int &amp;b = a;</code> 底层等价于指针常量 <code>int * const b = &amp;a;</code>，因此<strong>必须初始化</strong>且<strong>初始化后不可改指向</strong>。',
+              '<strong>引用作返回值：</strong>① 绝不返回局部变量的引用（可返回 <code>static</code> 变量或堆/成员引用）；② 返回引用的函数调用可以作为<strong>左值</strong>（如 <code>f() = 1000;</code>）。',
+              '<strong>常量引用：</strong><code>const int &amp;ref = 10;</code> 合法（编译器自动生成临时量）。常用于函数形参 <code>void show(const int &amp;a)</code>：零拷贝开销 + 防止误改实参！'
+            ]
+          },
+          {
+            title: '默认参数、占位参数与函数重载',
+            points: [
+              '<strong>默认参数两铁律：</strong>① <strong>靠右原则</strong>（某位置有默认值，右边必须全有）；② 声明和定义<strong>只能有一处</strong>写默认参数。',
+              '<strong>函数重载条件：</strong>同作用域 + 函数名相同 + 形参的<strong>类型、个数或顺序</strong>不同。<strong>仅返回值类型不同不能重载！</strong>',
+              '<strong>重载两大坑：</strong>① <code>func(int &amp;a)</code> 与 <code>func(const int &amp;a)</code> 可重载（变量调前者，常量调后者）；② 重载碰到默认参数极易产生<strong>二义性</strong>报错！'
+            ]
+          }
+        ]
+      },
+      {
+        id: 'ch7',
+        num: '07',
+        title: '类与对象：封装、构造析构与深浅拷贝',
+        pages: 'P20–P21, P25–P29',
+        summary: '封装与访问权限、struct vs class、const 指针辨析、构造/析构/拷贝构造规则、深浅拷贝与初始化列表。',
+        errata: [
+          {
+            page: 'P25',
+            title: '#define pi = 3.14 多写了等号（严重报错）',
+            detail: '宏定义是直接文本替换，绝不能加 = ！写了 = 后 2*pi*r 会变成 2*=3.14*r 直接编译失败。应写 #define PI 3.14 或 const double PI = 3.14;。'
+          }
+        ],
+        sections: [
+          {
+            title: '封装、访问权限与 const 指针辨析',
+            points: [
+              '<strong>类定义末尾分号：</strong><code>class Circle { ... };</code> 右大括号后必须加分号！',
+              '<strong>三种权限：</strong><code>public</code>（内外皆可）、<code>protected</code>（类内与子类）、<code>private</code>（仅类内与友元）。',
+              '<strong>struct vs class 唯一区别：</strong>默认访问权限不同（<code>struct</code> 默认 <code>public</code>，<code>class</code> 默认 <code>private</code>）。',
+              '<strong>const 指针速记（补充 P21）：</strong>看 <code>const</code> 在 <code>*</code> 左边还是右边——<code>const T *p</code>（常量指针：指向的值不可改）；<code>T * const p</code>（指针常量：指向不可改）；<code>const T * const p</code>（都不可改）。'
+            ]
+          },
+          {
+            title: '构造函数、析构函数与调用规则',
+            points: [
+              '<strong>语法对比：</strong>构造函数无返回值不写 <code>void</code>、同名、可重载；析构函数 <code>~类名()</code> <strong>无参数不可重载</strong>。',
+              '<strong>括号法两大坑：</strong>① 调无参构造写 <code>Person p1;</code>，<strong>绝不写 <code>Person p1();</code></strong>（会被当成函数声明）；② 别用拷贝构造初始化匿名对象 <code>Person(p3);</code>（等价于重定义 <code>Person p3;</code>）。',
+              '<strong>拷贝构造固定写法：</strong><code>Person(const Person &amp;p)</code>，必须加引用 <code>&amp;</code>（否则无限递归）和 <code>const</code>。',
+              '<strong>编译器提供规则：</strong>写了有参构造 → 不再提供默认无参构造；写了拷贝构造 → 不再提供其它普通构造。'
+            ]
+          },
+          {
+            title: '深拷贝 vs 浅拷贝 & 初始化列表',
+            points: [
+              '<strong>浅拷贝灾难：</strong>若类有堆区指针成员，默认浅拷贝会让两个对象指向同一块堆内存，析构时 <code>delete</code> 两次引发崩溃（Double Free）！',
+              '<strong>深拷贝解法：</strong>手写拷贝构造函数，为新对象重新 <code>new</code> 一块独立堆内存并拷贝数值。',
+              '<strong>初始化列表：</strong><code>Person(int a, int b) : m_A(a), m_B(b) {}</code>。补充：<code>const</code> 成员、引用成员、无默认构造的对象成员<strong>必须</strong>用初始化列表；初始化顺序按类内<strong>声明顺序</strong>而非列表顺序！'
+            ],
+            code: `Person(const Person &p) {
+    m_Age = p.m_Age;
+    // 深拷贝：重新在堆区申请内存，避免析构时重复释放！
+    m_Height = new int(*p.m_Height);
+}`
+          }
+        ]
+      },
+      {
+        id: 'ch8',
+        num: '08',
+        title: '对象模型、this 指针、友元与运算符重载',
+        pages: 'P30–P32',
+        summary: '对象成员构造顺序、静态成员、对象内存模型与 this 指针、常函数/常对象、友元以及左移运算符重载。',
+        errata: [
+          {
+            page: 'P32',
+            title: '左移运算符重载漏写了 << 符号',
+            detail: '原笔记写了 ostream& operator(ostream &cout, Person p)，漏了 << 且建议传 const 引用。标准写法：ostream& operator<<(ostream &out, const Person &p)。'
+          }
+        ],
+        sections: [
+          {
+            title: '对象成员与 static 静态成员',
+            points: [
+              '<strong>构造/析构顺序：</strong>当 A 对象作为 B 类的成员时，构造顺序为 <code>基类 → 成员对象 A → 本类 B</code>，析构顺序严格相反（先构造的后析构）。',
+              '<strong>静态成员变量：</strong>所有对象共享一份，编译期分配在全局区，<strong>类内声明、类外初始化</strong>（如 <code>int Person::m_A = 100;</code>）。',
+              '<strong>静态成员函数：</strong>所有对象共享，<strong>只能访问静态成员变量</strong>（因为没有 <code>this</code> 指针）。'
+            ]
+          },
+          {
+            title: '对象模型、this 指针与 const 修饰',
+            points: [
+              '<strong>分开存储：</strong>只有<strong>非静态成员变量</strong>占对象内存；空对象占 <strong>1 字节</strong>（用于分配独一无二的内存地址）。',
+              '<strong>this 指针两用途：</strong>① 解决同名冲突 <code>this-&gt;age = age;</code>；② 返回对象本身 <code>return *this;</code> 实现链式调用（<strong>补充：返回类型必须写引用 <code>Person&amp;</code></strong>，否则返回的是副本，链式修改无法作用于原对象！）。',
+              '<strong>空指针调成员函数：</strong>若函数未访问非静态成员可运行；访问则会崩，需加防御判断 <code>if (this == nullptr) return;</code>。',
+              '<strong>常函数 &amp; 常对象：</strong>成员函数后加 <code>const</code>（修饰 <code>this</code>）不可改普通属性，除非属性加 <code>mutable</code>；<code>const</code> 常对象<strong>只能调用常函数</strong>。'
+            ]
+          },
+          {
+            title: '友元 (friend) 与运算符重载',
+            points: [
+              '<strong>三种友元：</strong>全局函数作友元、类作友元（<strong>单向性、不可传递</strong>）、成员函数作友元（<code>friend void GoodGay::visit();</code>）。',
+              '<strong>运算符重载：</strong>关键字 <code>operator@</code>，可用成员函数或全局函数实现。',
+              '<strong>左移 &lt;&lt; 重载铁律：</strong><strong>不能用成员函数实现</strong>（否则调用变成 <code>p &lt;&lt; cout</code>），必须用全局函数（常配合 <code>friend</code>），且返回 <code>ostream&amp;</code> 以支持链式输出 <code>cout &lt;&lt; p1 &lt;&lt; endl;</code>。'
+            ],
+            code: `ostream& operator<<(ostream &out, const Person &p) {
+    out << "age=" << p.m_Age << ", score=" << p.m_Score;
+    return out; // 返回引用以支持链式输出
+}`
+          }
+        ]
+      }
+    ];
+
+    // 18 High-Frequency Pitfalls (including all 10 Original Note Errata)
+    const PITFALLS = [
+      {
+        id: 'p1', category: 'syntax', isErrata: true, page: 'P2', severity: '原笔记勘误',
+        title: 'main() 函数写成了 void main()',
+        wrong: 'void main() {\n    cout << "Hi";\n}',
+        right: 'int main() {\n    cout << "Hi";\n    return 0;\n}',
+        why: '标准 C++ (ISO C++) 明确规定 main 函数返回类型必须是 int，void main() 仅是老旧教材/部分编译器的非标准扩展，在 g++ 下会直接报错。'
+      },
+      {
+        id: 'p2', category: 'syntax', isErrata: true, page: 'P4', severity: '原笔记勘误',
+        title: '混淆字符串长度 (strlen) 与存储长度 (sizeof)',
+        wrong: '// 误记：字符串长度 = 字符个数 + 1\n"abc" 的字符串长度是 4 (❌)',
+        right: 'strlen("abc") == 3;  // 字符串长度不含 \'\\0\'\nsizeof("abc") == 4;  // 存储长度 = 长度 + 1',
+        why: 'C 风格字符串末尾会自动补 1 字节的结束符 \'\\0\'，它算入内存占用 (sizeof)，但不算入字符串逻辑长度 (strlen)。'
+      },
+      {
+        id: 'p3', category: 'syntax', isErrata: false, page: 'P6', severity: '高频必考',
+        title: '混合表达式中的整数除法陷阱 (1 / b)',
+        wrong: 'int b = 5;\ndouble res = 1.5 + 1 / b; // 1/5 先算得 0，res = 1.5',
+        right: 'int b = 5;\ndouble res = 1.5 + 1.0 / b; // 1.0/5 得 0.2，res = 1.7',
+        why: '隐式类型转换是按“每个子运算”独立进行的！1 和 b 都是 int，所以 1/b 先执行整数除法截断为 0，之后才和 1.5 相加。'
+      },
+      {
+        id: 'p4', category: 'syntax', isErrata: true, page: 'P7', severity: '原笔记勘误',
+        title: '++ / -- 不仅用于 int，且慎写 a += ++a',
+        wrong: 'int a = 3;\na += ++a; // C++14及以前为未定义行为(UB)',
+        right: 'int a = 3;\n++a;\na += a; // 拆成两行，任何标准下结果清晰稳定',
+        why: '原笔记写 ++ 只适用于 int（漏了 char 和极重要的指针 p++）；此外在同一表达式多次修改并读取同一变量极易引发未定义行为。'
+      },
+      {
+        id: 'p5', category: 'syntax', isErrata: false, page: 'P7', severity: '高频必考',
+        title: '逻辑运算 && 和 || 的短路求值',
+        wrong: 'int a = 0, b = 1;\nbool f = (a != 0) && (++b > 1);\n// 误以为 b 变成了 2',
+        right: '// 左边 (a != 0) 为 false，右边 ++b 不执行！\n// 最终 f == false, b 依然是 1',
+        why: '&& 遇假即停，|| 遇真即停。右侧表达式里的自增、赋值或函数调用都不会被执行，这是选择题最爱考的陷阱！'
+      },
+      {
+        id: 'p6', category: 'syntax', isErrata: false, page: 'P8', severity: '高危易错',
+        title: '强转时机错误 & sizeof 内部不求值',
+        wrong: 'int a = 5, b = 2;\nfloat x = float(a / b); // x = 2.0!\nsizeof(a++); // 误以为 a 会加 1',
+        right: 'float x = (float)a / b; // x = 2.5\n// sizeof 在编译期求值，a++ 不会执行，a 仍为 5',
+        why: 'float(a/b) 括号内先做整数除法得 2 再转 float；而 sizeof 是编译期单目运算符，不会在运行期执行括号内的副作用。'
+      },
+      {
+        id: 'p7', category: 'syntax', isErrata: false, page: 'P10–P12', severity: '高频必考',
+        title: 'if 后多加分号 & do-while 漏写分号',
+        wrong: 'if (a < 0); a = -a; // a=-a 永远执行!\ndo { cin >> x; } while (x <= 0) // 编译报错',
+        right: 'if (a < 0) a = -a;\ndo { cin >> x; } while (x <= 0); // 末尾必有分号',
+        why: 'if(...) 后的分号构成空语句，导致后续语句脱离 if 控制；而 do-while 语句必须以分号结尾。'
+      },
+      {
+        id: 'p8', category: 'syntax', isErrata: true, page: 'P12', severity: '原笔记勘误',
+        title: '不同类型变量不能用逗号连写 & 阶乘溢出',
+        wrong: 'int i, n, long p; // 语法错误！\np = 1',
+        right: 'int i, n;\nlong long p = 1; // 用分号隔开，且防 int 溢出',
+        why: '逗号只能分隔同类型变量；另外 13! = 6,227,020,800 已远超 int 最大值（约 21 亿），求阶乘应使用 long long。'
+      },
+      {
+        id: 'p9', category: 'pointer', isErrata: true, page: 'P13', severity: '原笔记勘误',
+        title: '字符数组无 \'\\0\' 导致乱码的真正条件',
+        wrong: '// 笔记例：char str[30]={\'c\',\'+\',\'+\'}; 会乱码(实际不会)\nchar s[] = {\'c\',\'+\',\'+\'}; // 这个才会真乱码！',
+        right: 'char s1[30] = {\'c\',\'+\',\'+\'}; // 剩余27位自动补0(\'\\0\')\nchar s2[] = "c++"; // 自动补 \'\\0\'，最安全',
+        why: '部分初始化数组时，未显式赋值的尾部元素会被自动填 0（即 \'\\0\'）。只有字符刚好填满数组且未放 \'\\0\' 时，cout 才会越界输出乱码。'
+      },
+      {
+        id: 'p10', category: 'pointer', isErrata: true, page: 'P13', severity: '原笔记勘误',
+        title: 'for 循环内声明的变量出循环后失效',
+        wrong: 'for (int i = 0; i < 10; i++) cin >> a[i];\ni = 1; // 编译错误：i 未声明！',
+        right: 'for (int i = 0; i < 10; i++) cin >> a[i];\nint i = 1; // 重新声明，或在 for 之前声明 int i;',
+        why: 'C++ 标准中，for 语句头部声明的变量作用域仅限于该 for 循环内部，循环结束即销毁。'
+      },
+      {
+        id: 'p11', category: 'pointer', isErrata: false, page: 'P15–P16', severity: '高频必考',
+        title: '*p++ vs *++p vs (*p)++ 与数组名不能自增',
+        wrong: 'int a[3] = {10, 20, 30};\na++; // 编译报错：数组名是地址常量！',
+        right: 'int *p = a;\nint x = *p++;   // x=10, p指向20\nint y = (*p)++; // y=20, a[1]变为21, p不动',
+        why: '数组名代表首元素常量地址，不能修改指向；指针变量 p 可以移动，*p++ 移动指针，(*p)++ 修改指针指向的值。'
+      },
+      {
+        id: 'p12', category: 'pointer', isErrata: false, page: 'P17, P22', severity: '高危易错',
+        title: 'new[] 必须配 delete[] & 严禁返回局部变量地址',
+        wrong: 'int *arr = new int[5];\ndelete arr; // 未定义行为！\nint* f() { int a = 10; return &a; } // 悬空指针！',
+        right: 'int *arr = new int[5];\ndelete[] arr; arr = nullptr;\n// 若需返回地址，使用 new 或 static 变量',
+        why: '数组动态分配必须用 delete[] 释放；栈区局部变量在函数返回时立即销毁，返回其地址或引用会造成极其隐蔽的内存错误。'
+      },
+      {
+        id: 'p13', category: 'func', isErrata: false, page: 'P24–P25', severity: '高频必考',
+        title: '仅返回值不同不能重载 & 重载撞上默认参数',
+        wrong: 'void f(int a, int b = 10);\nvoid f(int a);\nf(5); // 二义性编译报错！',
+        right: '// 避免重载函数同时带有会引发参数个数重叠的默认参数\n// 且函数声明写了默认参数，定义处绝不再写',
+        why: '编译器无法通过返回值区分调用哪个函数；当 f(5) 同时匹配两个重载版本时，会产生二义性错误。'
+      },
+      {
+        id: 'p14', category: 'oop', isErrata: true, page: 'P25', severity: '原笔记勘误',
+        title: '#define 宏定义绝不能写等号 =',
+        wrong: '#define pi = 3.14\ndouble c = 2 * pi * r; // 替换成 2 * = 3.14 * r 报错!',
+        right: '#define PI 3.14\n// C++ 中更推荐：\nconst double PI = 3.14;',
+        why: '#define 是预处理阶段的纯文本机械替换，不是变量赋值语句，多写等号或分号都会直接破坏替换后的语法。'
+      },
+      {
+        id: 'p15', category: 'oop', isErrata: false, page: 'P27', severity: '高频必考',
+        title: '括号法调无参构造多写了 ()（Most Vexing Parse）',
+        wrong: 'Person p1(); // 这不是创建对象，而是声明了一个返回 Person 的函数！',
+        right: 'Person p1;   // 正确调用无参构造\nPerson p2(10); // 有参构造才加括号',
+        why: 'C++ 语法解析规则规定：凡是能被解释为函数声明的语句，编译器一律优先解释为函数声明！'
+      },
+      {
+        id: 'p16', category: 'oop', isErrata: false, page: 'P28', severity: '高频必考',
+        title: '含堆区指针的类未写深拷贝 → 析构崩溃',
+        wrong: '// 使用默认浅拷贝：p2.m_H = p1.m_H\n// p2 析构 delete 后，p1 析构再次 delete 同地址 → 崩溃！',
+        right: 'Person(const Person &p) {\n    m_H = new int(*p.m_H); // 深拷贝：另开堆空间\n}',
+        why: '只要类中有属性在堆区开辟（new），就必须自己提供深拷贝构造函数（和赋值运算符），防止 Double Free。'
+      },
+      {
+        id: 'p17', category: 'oop', isErrata: false, page: 'P31', severity: '高危易错',
+        title: '链式调用 return *this 漏写引用返回 &',
+        wrong: 'Person addAge(int a) { this->age += a; return *this; }\np.addAge(10).addAge(10); // 第2次改的是临时副本！',
+        right: 'Person& addAge(int a) { this->age += a; return *this; }\np.addAge(10).addAge(10); // 两次都修改原对象 p！',
+        why: '按值返回会调用拷贝构造生成一个临时新对象，后续链式调用全作用在临时副本上，原对象只生效了一次！'
+      },
+      {
+        id: 'p18', category: 'oop', isErrata: true, page: 'P32', severity: '原笔记勘误',
+        title: '左移运算符重载漏写 << 且不能作类成员函数',
+        wrong: '// 笔记漏了 <<：ostream& operator(ostream &cout, Person p)\n// 若写成成员函数，调用会变成 p << cout！',
+        right: 'ostream& operator<<(ostream &out, const Person &p) {\n    out << p.m_Age;\n    return out;\n}',
+        why: '重载左移运算符函数名必须是 operator<<，且因为左操作数是 cout (ostream)，必须写为全局函数（常声明为类的 friend）。'
+      }
+    ];
+
+    // 20 High-Value Quiz Questions
+    const QUIZ_QUESTIONS = [
+      {
+        id: 'q1', chapterId: 'ch1', topic: '数据类型与常量',
+        question: '在 C++ 中，表达式 sizeof("A") 和 sizeof(\'A\') 的值分别是多少？',
+        code: 'cout << sizeof("A") << " " << sizeof(\'A\');',
+        options: ['1 和 1', '2 和 1', '2 和 2', '4 和 1'],
+        answer: 1,
+        explanation: '双引号 "A" 是字符串常量，末尾自动补一个 \'\\0\'，占 2 字节；单引号 \'A\' 是 char 字符常量，在 C++ 中占 1 字节。'
+      },
+      {
+        id: 'q2', chapterId: 'ch2', topic: '隐式类型转换',
+        question: '已知 int a = 10, b = 5; double x = 1.5; 则表达式 a * x + 1 / b + 1.0 / b 的结果是？',
+        code: 'int a = 10, b = 5;\ndouble x = 1.5;\ndouble res = a * x + 1 / b + 1.0 / b;',
+        options: ['15.4', '15.2', '15.0', '16.2'],
+        answer: 1,
+        explanation: 'a*x = 15.0；1/b 是整数除法得 0（不会自动变浮点！）；1.0/b 是浮点除法得 0.2。总和为 15.0 + 0 + 0.2 = 15.2。'
+      },
+      {
+        id: 'q3', chapterId: 'ch2', topic: '短路求值',
+        question: '执行下面代码后，变量 a 和 b 的值分别是？',
+        code: 'int a = 0, b = 3;\nif (a != 0 && ++b > 3) {\n    a = 1;\n}',
+        options: ['a = 0, b = 4', 'a = 1, b = 4', 'a = 0, b = 3', 'a = 1, b = 3'],
+        answer: 2,
+        explanation: '&& 存在短路求值：左侧 a != 0 为 false，右侧 ++b > 3 根本不执行，因此 b 保持 3，a 保持 0。'
+      },
+      {
+        id: 'q4', chapterId: 'ch2', topic: '逗号与赋值优先级',
+        question: '执行下列代码后，x 的值是多少？（注意没有括号！）',
+        code: 'int a = 1, b = 2, x;\nx = a + 1, b + 3, a + b;',
+        options: ['3', '5', '2', '编译报错'],
+        answer: 2,
+        explanation: '逗号运算符优先级最低，低于赋值运算符 =！所以语句等价于 (x = a + 1), (b + 3), (a + b)，x 被赋值为 2。加上括号 x = (a+1, b+3, a+b) 结果才是 3。'
+      },
+      {
+        id: 'q5', chapterId: 'ch2', topic: 'sizeof 特性',
+        question: '执行下列代码后，变量 a 的值是？',
+        code: 'int a = 5;\nint s = sizeof(a++);',
+        options: ['5', '6', '4', '未定义'],
+        answer: 0,
+        explanation: 'sizeof 是编译期运算符，编译器只推导括号内表达式的类型大小（int 为 4），绝对不会在运行时执行 a++！所以 a 仍为 5。'
+      },
+      {
+        id: 'q6', chapterId: 'ch3', topic: '分支结构陷阱',
+        question: '执行下面代码后，变量 a 的输出是什么？',
+        code: 'int a = 3;\nif (a < 0);\n    a = -a;\ncout << a;',
+        options: ['3', '-3', '0', '编译报错'],
+        answer: 1,
+        explanation: 'if (a < 0); 后面多了一个分号，构成空语句！所以 a = -a; 不受 if 控制，无条件执行，最终输出 -3。'
+      },
+      {
+        id: 'q7', chapterId: 'ch3', topic: 'switch-case 穿透',
+        question: '下列 switch 代码在 x = 1 时的输出是？',
+        code: 'int x = 1;\nswitch (x) {\n    case 1: cout << "A";\n    case 2: cout << "B"; break;\n    default: cout << "C";\n}',
+        options: ['A', 'AB', 'ABC', 'B'],
+        answer: 1,
+        explanation: 'case 1 末尾没有 break，发生穿透（fall-through），继续执行 case 2 输出 B 后遇到 break 才跳出，最终输出 AB。'
+      },
+      {
+        id: 'q8', chapterId: 'ch4', topic: '字符数组与 \\0',
+        question: '以下哪种字符数组定义后，执行 cout << s; 最有可能输出乱码？',
+        code: '',
+        options: [
+          'char s[10] = "abc";',
+          'char s[10] = {\'a\', \'b\', \'c\'};',
+          'char s[] = {\'a\', \'b\', \'c\'};',
+          'char s[] = "abc";'
+        ],
+        answer: 2,
+        explanation: 'char s[] = {\'a\',\'b\',\'c\'}; 长度恰好为 3 且末尾没有 \'\\0\'，cout 会一直越界向后读取内存直到偶然遇到 0。选项 B 虽无 \'\\0\' 但剩余 7 位会自动补 0。'
+      },
+      {
+        id: 'q9', chapterId: 'ch5', topic: '指针运算',
+        question: '已知 int a[5] = {10, 20, 30, 40, 50}; int *p = &a[1], *q = &a[4]; 则 q - p 的值是？',
+        code: 'int a[5] = {10, 20, 30, 40, 50};\nint *p = &a[1], *q = &a[4];\ncout << (q - p);',
+        options: ['12', '3', '4', '30'],
+        answer: 1,
+        explanation: '同数组两个指针相减，结果是它们之间相隔的【元素个数】（4 - 1 = 3），而不是相隔的字节数（12）！'
+      },
+      {
+        id: 'q10', chapterId: 'ch5', topic: '*p++ 与 (*p)++',
+        question: '已知 int a[3] = {10, 20, 30}; int *p = a; 执行 int x = *p++; 后，x 和 *p 的值分别是？',
+        code: 'int a[3] = {10, 20, 30};\nint *p = a;\nint x = *p++;',
+        options: ['x = 10, *p = 11', 'x = 20, *p = 20', 'x = 10, *p = 20', 'x = 11, *p = 20'],
+        answer: 2,
+        explanation: '*p++ 先对原指针解引用拿到 a[0] (10) 赋给 x，然后指针 p 自增指向下一个元素 a[1] (20)。'
+      },
+      {
+        id: 'q11', chapterId: 'ch5', topic: '行指针与指针数组',
+        question: '若要定义一个指向二维数组 int a[3][4] 第 0 行的行指针 ps，正确的声明是？',
+        code: '',
+        options: ['int *ps[4];', 'int (*ps)[4];', 'int (*ps)[3];', 'int **ps;'],
+        answer: 1,
+        explanation: 'int (*ps)[4] 是指向含 4 个 int 的一维数组（即一行）的指针；不加括号的 int *ps[4] 是存放 4 个 int 指针的数组。'
+      },
+      {
+        id: 'q12', chapterId: 'ch5', topic: '动态内存释放',
+        question: '使用 int *arr = new int[10]; 在堆区申请数组后，正确的释放方式是？',
+        code: '',
+        options: ['delete arr;', 'free(arr);', 'delete[] arr; arr = nullptr;', 'delete arr[10];'],
+        answer: 2,
+        explanation: 'new[] 必须与 delete[] 配对释放，且释放后将指针置为 nullptr 可以防止悬空指针或二次释放。'
+      },
+      {
+        id: 'q13', chapterId: 'ch6', topic: '引用的本质与限制',
+        question: '关于 C++ 引用，下列说法【错误】的是？',
+        code: '',
+        options: [
+          '引用在定义时必须初始化',
+          '引用初始化后可以重新绑定到另一个同类型变量',
+          'const int &ref = 10; 是合法的',
+          '返回局部变量的引用是危险的未定义行为'
+        ],
+        answer: 1,
+        explanation: '引用的底层本质是指针常量 (T * const)，一旦绑定某个变量后就绝对不能再更改指向！'
+      },
+      {
+        id: 'q14', chapterId: 'ch6', topic: '函数重载条件',
+        question: '在同一个作用域内，下面哪组函数声明【不能】构成合法的函数重载？',
+        code: '',
+        options: [
+          'void f(int a); 与 void f(double a);',
+          'void f(int &a); 与 void f(const int &a);',
+          'int f(int a); 与 double f(int a);',
+          'void f(int a, double b); 与 void f(double a, int b);'
+        ],
+        answer: 2,
+        explanation: '函数重载只看形参的类型、个数或顺序，仅返回值类型不同绝对不能构成函数重载！'
+      },
+      {
+        id: 'q15', chapterId: 'ch7', topic: '宏定义勘误',
+        question: '下列哪行代码在 C++ 中定义圆周率常量会导致编译错误？',
+        code: '',
+        options: [
+          'const double PI = 3.14;',
+          '#define PI 3.14',
+          '#define PI = 3.14',
+          'double const PI = 3.14;'
+        ],
+        answer: 2,
+        explanation: '原笔记 P25 踩过的坑！#define 不能写等号，否则使用时会被文本替换成非法表达式（如 2 * = 3.14 * r）。'
+      },
+      {
+        id: 'q16', chapterId: 'ch7', topic: '无参构造调用陷阱',
+        question: '已知类 Person 有无参构造函数，下面哪行代码并没有真正创建一个 Person 对象？',
+        code: '',
+        options: ['Person p1;', 'Person p2 = Person();', 'Person p3();', 'Person *p4 = new Person();'],
+        answer: 2,
+        explanation: 'Person p3(); 会被编译器解析为“声明一个名为 p3、无参数、返回类型为 Person 的函数”，而不是创建对象！'
+      },
+      {
+        id: 'q17', chapterId: 'ch7', topic: '构造函数提供规则',
+        question: '如果程序员只为一个类手动编写了【拷贝构造函数】，那么编译器还会自动提供什么？',
+        code: '',
+        options: [
+          '默认无参构造和默认析构',
+          '只提供默认析构函数，不再提供默认无参构造',
+          '默认无参构造、有参构造和析构',
+          '什么都不提供'
+        ],
+        answer: 1,
+        explanation: '只要用户自定义了拷贝构造（或有参构造），编译器就不再提供默认无参构造函数；但仍会提供默认析构函数。'
+      },
+      {
+        id: 'q18', chapterId: 'ch7', topic: '深拷贝与浅拷贝',
+        question: '当类包含指向堆区内存的指针成员时，使用默认浅拷贝最直接的危害是？',
+        code: '',
+        options: [
+          '编译期直接报错',
+          '析构时同一块堆内存被 delete 两次导致崩溃',
+          '成员函数无法访问私有属性',
+          '对象大小变成 0 字节'
+        ],
+        answer: 1,
+        explanation: '浅拷贝只复制指针地址，导致原对象与副本指向同一块堆区，对象依次销毁时触发 Double Free 崩溃。'
+      },
+      {
+        id: 'q19', chapterId: 'ch8', topic: '对象模型与常对象',
+        question: '关于空类、this 指针与常对象，下列说法正确的是？',
+        code: '',
+        options: [
+          '空类对象的 sizeof 大小是 0',
+          '静态成员函数内部可以使用 this 指针',
+          'const 修饰的常对象只能调用 const 修饰的常函数',
+          '常函数内无论如何都不能修改任何成员变量'
+        ],
+        answer: 2,
+        explanation: '空对象占 1 字节；静态成员函数没有 this 指针；常函数可以修改加了 mutable 修饰的成员变量；常对象只能调用常函数。'
+      },
+      {
+        id: 'q20', chapterId: 'ch8', topic: '左移运算符重载',
+        question: '为什么重载左移运算符 operator<< 输出自定义对象时，通常不能写成类的成员函数？',
+        code: '',
+        options: [
+          'C++ 语法禁止重载 <<',
+          '写成成员函数会导致 cout 必须在右侧（p << cout）',
+          '成员函数不能返回 ostream&',
+          '成员函数不能访问私有成员'
+        ],
+        answer: 1,
+        explanation: '成员函数的隐式左操作数是 *this，若将 operator<< 写成 Person 成员函数，调用方式会变成 p << cout，不符合使用习惯，因此必须用全局函数实现。'
+      },
+      {
+        id: 'q21', chapterId: 'ch1', topic: '标准 main 与 I/O 换行',
+        question: '关于 C++ 主函数与输出换行，下列说法【正确】的是？',
+        code: '',
+        options: [
+          '标准 C++ 规定主函数应写作 void main()',
+          '#include <iostream>; 末尾必须加分号',
+          'endl 除了换行外，还会强制刷新输出缓冲区',
+          '字符常量 \'\\n\' 是回车符 (CR)，ASCII 码为 13'
+        ],
+        answer: 2,
+        explanation: '标准 C++ 主函数必须返回 int；预处理命令 #include 末尾不能加分号；\'\\n\' 是换行符 (LF, 10)；endl 会换行并刷新缓冲区。'
+      },
+      {
+        id: 'q22', chapterId: 'ch1', topic: '变量初始化与 const',
+        question: '关于 C++ 中的符号常量 const 与局部变量，下列说法【错误】的是？',
+        code: '',
+        options: [
+          'const int M = 100; 必须在声明时初始化',
+          '函数内未初始化的普通局部变量会自动默认为 0',
+          '浮点常量 3.14 默认是 double 类型，3.14f 才是 float 类型',
+          '标识符不能以数字开头，也不能使用关键字 int、float'
+        ],
+        answer: 1,
+        explanation: '函数内的普通局部变量（栈区）若未初始化，其值是随机的垃圾值（如 -858993460），不会自动清零！'
+      },
+      {
+        id: 'q23', chapterId: 'ch3', topic: 'do-while 与变量声明',
+        question: '下列关于循环语句的说法中，【正确】的是？',
+        code: '',
+        options: [
+          'while 循环和 do-while 循环都至少执行一次循环体',
+          'do { ... } while (cond) 末尾的分号可以省略',
+          'for ( ; ; ) 因为缺少表达式，会导致编译错误',
+          'do-while 先执行循环体再判断条件，至少执行 1 次，且末尾必须加分号'
+        ],
+        answer: 3,
+        explanation: 'while 可能执行 0 次；do-while 至少执行 1 次且末尾分号不可省略；for(;;) 语法合法，表示死循环。'
+      },
+      {
+        id: 'q24', chapterId: 'ch4', topic: '字符数组输入',
+        question: '定义 char str[80]; 并执行 cin >> str; 时，若用户输入 "Hello World" 并回车，str 中实际存入的是？',
+        code: 'char str[80];\ncin >> str;\ncout << str;',
+        options: ['Hello World', 'Hello', 'H', '编译报错'],
+        answer: 1,
+        explanation: 'cin >> str 读取字符串时遇到第一个空白分隔符（空格、Tab 或回车）就会停止，因此只读入 "Hello"。要读一整行需用 cin.getline(str, 80)。'
+      },
+      {
+        id: 'q25', chapterId: 'ch4', topic: '数组下标与循环作用域',
+        question: '关于数组 int a[10]; 与循环遍历，下列哪段代码在标准 C++ 中会【编译报错】？',
+        code: '',
+        options: [
+          'for (int i = 0; i < 10; i++) cin >> a[i];',
+          'for (int i = 0; i < 10; i++) a[i] = i;  i = 1;',
+          'int amax = a[0];',
+          'a[9] = 100;'
+        ],
+        answer: 1,
+        explanation: '原笔记 P13 踩过的坑！在 for 头部声明的 int i 作用域仅限于该 for 循环，循环外直接写 i = 1; 会因未定义标识符而编译报错。'
+      },
+      {
+        id: 'q26', chapterId: 'ch6', topic: '函数默认参数规则',
+        question: '下列关于函数默认参数的写法中，【合法】的是？',
+        code: '',
+        options: [
+          'int add(int a = 1, int b, int c = 3);',
+          '声明写 int f(int a = 10);，定义也写 int f(int a = 10) { return a; }',
+          'int add(int a, int b = 2, int c = 3);',
+          'int f(int a = 1, int b);'
+        ],
+        answer: 2,
+        explanation: '默认参数必须遵守“靠右原则”（某参数有默认值，其右边必须全部有默认值），且声明与定义只能有一处写默认参数。'
+      },
+      {
+        id: 'q27', chapterId: 'ch8', topic: 'this 指针与链式调用',
+        question: '若想实现链式调用 p.addAge(10).addAge(10); 让对象 p 的年龄真正增加 20，成员函数 addAge 的返回类型必须写为？',
+        code: 'class Person {\npublic:\n    int age = 0;\n    ____ addAge(int a) {\n        this->age += a;\n        return *this;\n    }\n};',
+        options: ['void', 'Person', 'Person&', 'Person*'],
+        answer: 2,
+        explanation: '必须返回引用 Person&！如果按值返回 Person，第一次调用后会拷贝出一个临时副本，第二次 .addAge(10) 只修改了临时副本，原对象 p 的年龄只会变成 10。'
+      }
+    ];
+
+    // 24 Flashcards
+    const FLASHCARDS = [
+      { id: 'f1', cat: '基础与运算', page: 'P4', q: '字符串常量 "a" 和字符常量 \'a\' 占用字节数有何区别？', a: '<code>\'a\'</code> 是字符常量占 <strong>1 字节</strong>；<code>"a"</code> 是字符串常量，末尾隐含结束符 <code>\'\\0\'</code>，占 <strong>2 字节</strong>。' },
+      { id: 'f2', cat: '基础与运算', page: 'P9', q: 'cout << "\\n" 与 cout << endl 有什么区别？', a: '<code>"\\n"</code> 仅输出换行符，轻量高效；<code>endl</code> 除了换行还会<strong>强制刷新输出缓冲区</strong>。' },
+      { id: 'f3', cat: '基础与运算', page: 'P6', q: 'C++ 中取余运算符 % 对操作数有什么限制？', a: '<code>%</code> <strong>只能用于整数类型</strong>（int, long, char 等），不能用于 float 或 double。' },
+      { id: 'f4', cat: '基础与运算', page: 'P7', q: '逻辑运算符的优先级顺序是什么？什么是短路求值？', a: '优先级：<strong><code>! &gt; &amp;&amp; &gt; ||</code></strong>。<br>短路：<code>A &amp;&amp; B</code> 左假则 B 不算；<code>A || B</code> 左真则 B 不算。' },
+      { id: 'f5', cat: '基础与运算', page: 'P8', q: '逗号表达式 (e1, e2, ..., en) 的求值顺序和结果值是什么？', a: '优先级<strong>最低</strong>，从左向右依次求值，整体结果等于<strong>最后一个表达式 en 的值</strong>。' },
+      { id: 'f6', cat: '基础与运算', page: 'P8', q: 'sizeof(x++) 执行后，x 的值会加 1 吗？为什么？', a: '<strong>不会！</strong>sizeof 是<strong>编译期</strong>运算符，只推导表达式类型大小，不会在运行期执行括号内的运算。' },
+      { id: 'f7', cat: '基础与运算', page: 'P10', q: '什么是“悬空 else”匹配原则？', a: '<code>else</code> 永远与<strong>最近且尚未匹配的 <code>if</code></strong> 配对，与代码缩进无关。想改变归属必须加 <code>{}</code>。' },
+      { id: 'f8', cat: '基础与运算', page: 'P11', q: 'switch(expr) 中 expr 可以是什么类型？缺 break 会怎样？', a: '只能是<strong>整型（含 char）或枚举类型</strong>，仅支持等值判断。缺 <code>break</code> 会发生 <strong>case 穿透</strong>，一路向下执行。' },
+      { id: 'f9', cat: '指针与内存', page: 'P14', q: '使用指针必须牢记的“三大安全铁律”是什么？', a: '1. 指针类型与目标类型必须一致；<br>2. 指针必须初始化（杜绝野指针）；<br>3. <strong>空指针 (nullptr) 绝对不能解引用</strong>。' },
+      { id: 'f10', cat: '指针与内存', page: 'P15', q: '指针 p + n 移动多少字节？两个指针 q - p 的结果含义是什么？', a: '<code>p + n</code> 移动 <strong><code>n × sizeof(T)</code> 字节</strong>；<br><code>q - p</code> 得到两个指针之间相隔的<strong>元素个数</strong>（不是字节数！）。' },
+      { id: 'f11', cat: '指针与内存', page: 'P15', q: '区分 *p++、*++p 和 (*p)++！', a: '• <code>*p++</code>：先解引用取原值，再让指针后移<br>• <code>*++p</code>：先让指针后移，再解引用<br>• <code>(*p)++</code>：指针不动，让指向的变量值加 1' },
+      { id: 'f12', cat: '指针与内存', page: 'P16', q: '二维数组 a[m][n] 中，a + 1 和 a[0] + 1 的区别？行指针怎么声明？', a: '<code>a + 1</code> 移动<strong>一整行</strong>；<code>a[0] + 1</code> 移动<strong>1 个元素</strong>。<br>行指针声明：<code>int (*ps)[n];</code>（括号不可少）。' },
+      { id: 'f13', cat: '指针与内存', page: 'P22', q: 'C++ 程序运行时的内存四区分别是哪四个？', a: '1. <strong>代码区</strong>（机器指令，共享只读）<br>2. <strong>全局区</strong>（全局/静态/字符串常量/const全局）<br>3. <strong>栈区</strong>（局部变量/形参，编译器自动管）<br>4. <strong>堆区</strong>（new/delete 程序员手动管）' },
+      { id: 'f14', cat: '指针与内存', page: 'P17', q: 'new 单个对象和 new[] 动态数组分别怎么释放？释放后还应做什么？', a: '单个用 <code>delete p;</code>，数组必须用 <strong><code>delete[] arr;</code></strong>。<br>释放后应立即置空 <code>p = nullptr;</code> 防止悬空指针。' },
+      { id: 'f15', cat: '函数与引用', page: 'P23', q: '引用的底层本质是什么？有哪些必须遵守的限制？', a: '底层本质是<strong>指针常量 (<code>T * const</code>)</strong>。<br>限制：① 定义时<strong>必须初始化</strong>；② 初始化后<strong>不可更改指向</strong>。' },
+      { id: 'f16', cat: '函数与引用', page: 'P23–P24', q: '引用作函数返回值有哪两条核心规律？常量引用有什么用？', a: '1. 绝不返回局部变量的引用；<br>2. 返回引用的函数调用可作<strong>左值</strong>。<br><code>const T&amp;</code> 修饰形参可零拷贝且防止误修改实参。' },
+      { id: 'f17', cat: '函数与引用', page: 'P24', q: '函数默认参数的两个铁律是什么？', a: '1. <strong>靠右原则</strong>：某位置有默认参数，其右侧所有参数都必须有；<br>2. 函数声明和定义<strong>只能有一处</strong>写默认参数。' },
+      { id: 'f18', cat: '函数与引用', page: 'P24–P25', q: '函数重载的三个条件是什么？返回值不同能重载吗？', a: '条件：① 同作用域 ② 函数名相同 ③ 形参类型、个数或顺序不同。<br><strong>仅返回值类型不同不能构成重载！</strong>' },
+      { id: 'f19', cat: '类与对象', page: 'P26', q: 'C++ 中 struct 和 class 的唯一区别是什么？', a: '<strong>默认访问权限不同</strong>：<code>struct</code> 默认 <code>public</code>，<code>class</code> 默认 <code>private</code>（继承时默认继承方式也同理）。' },
+      { id: 'f20', cat: '类与对象', page: 'P27', q: '拷贝构造函数的固定写法是什么？为什么必须加 const 和 &？', a: '<code>类名(const 类名 &amp;p)</code>。<br>加 <code>&amp;</code> 防止值传递引发<strong>无限递归调用拷贝构造</strong>；加 <code>const</code> 防止误修改原对象且能接收常对象/临时量。' },
+      { id: 'f21', cat: '类与对象', page: 'P28', q: '什么情况必须自己写深拷贝构造函数？', a: '当类中有属性在<strong>堆区开辟内存 (new)</strong> 时，必须手写深拷贝重新 <code>new</code> 内存，防止默认浅拷贝在析构时触发 <strong>Double Free 崩溃</strong>。' },
+      { id: 'f22', cat: '类与对象', page: 'P30', q: '类对象作类成员时，构造和析构顺序是什么？静态成员变量怎么初始化？', a: '构造：<strong>基类 → 子对象成员 → 本类</strong>；析构顺序严格相反。<br>静态成员变量必须<strong>类内声明、类外初始化</strong>（如 <code>int Person::m_A = 10;</code>）。' },
+      { id: 'f23', cat: '类与对象', page: 'P31', q: '空对象占多少字节？常函数和常对象有什么规则？', a: '空对象占 <strong>1 字节</strong>（区分内存地址）。<br>常函数（后加 <code>const</code>）不可改普通属性，除非属性加 <code>mutable</code>；常对象<strong>只能调用常函数</strong>。' },
+      { id: 'f24', cat: '类与对象', page: 'P32', q: '左移运算符 operator<< 为什么只能写成全局函数，且返回 ostream&？', a: '写成成员函数会导致调用变成 <code>p &lt;&lt; cout</code>；返回 <code>ostream&amp;</code> 是为了支持 <code>cout &lt;&lt; p1 &lt;&lt; p2 &lt;&lt; endl;</code> <strong>链式输出</strong>。' }
+    ];
+
+    // Operator Precedence Data
+    const PRECEDENCE_DATA = [
+      { level: 1, ops: '::', name: '作用域解析', assoc: '左 → 右', trap: '类外定义成员函数、访问静态成员 Person::m_A', hot: false },
+      { level: 2, ops: '()  []  .  ->  后置++  后置--', name: '后缀/成员访问', assoc: '左 → 右', trap: '后置 ++ 优先级高于前缀 *，所以 *p++ 等价于 *(p++)！', hot: true },
+      { level: 3, ops: '前缀++  前缀--  !  ~  +  -  *  &  sizeof  new  delete  (type)', name: '单目运算符', assoc: '右 → 左', trap: 'sizeof 在编译期计算；*++p 先自增指针再解引用', hot: true },
+      { level: 4, ops: '*  /  %', name: '乘、除、取余', assoc: '左 → 右', trap: '整数除法丢小数 (1/5=0)；% 只能用于整数', hot: true },
+      { level: 5, ops: '+  -', name: '加、减', assoc: '左 → 右', trap: '指针加减按 sizeof(T) 步长移动', hot: false },
+      { level: 6, ops: '<<  >>', name: '移位 / 流插入提取', assoc: '左 → 右', trap: '低于算术，高于关系：cout << a + b 合法，cout << (a < b) 要加括号！', hot: true },
+      { level: 7, ops: '<  <=  >  >=', name: '大小关系', assoc: '左 → 右', trap: '不可连写 1 < x < 5（会先算 1<x 得 0/1 再和 5 比！）', hot: true },
+      { level: 8, ops: '==  !=', name: '相等关系', assoc: '左 → 右', trap: '优先级低于 < > <= >=；切勿把 == 误写成 =', hot: true },
+      { level: 9, ops: '&&', name: '逻辑与', assoc: '左 → 右', trap: '左假则短路，右侧不执行！优先级高于 ||', hot: true },
+      { level: 10, ops: '||', name: '逻辑或', assoc: '左 → 右', trap: '左真则短路，右侧不执行！', hot: true },
+      { level: 11, ops: '? :', name: '三元条件', assoc: '右 → 左', trap: '右结合：a?b:c?d:e 等价于 a?b:(c?d:e)', hot: false },
+      { level: 12, ops: '=  +=  -=  *=  /=  %=', name: '赋值与复合赋值', assoc: '右 → 左', trap: '右侧整体先算：a *= b + 3 等价于 a = a * (b + 3)', hot: true },
+      { level: 13, ops: ',', name: '逗号运算符', assoc: '左 → 右', trap: '优先级全 C++ 最低！x = 1, 2 结果 x 是 1 而非 2', hot: true }
+    ];
+
+    // =========================================================================
+    // 2. STATE & STORAGE (Sandbox-safe try/catch localStorage)
+    // =========================================================================
+    const STORAGE_KEY = 'cpp_review_hub_state_v1';
+    const defaultState = {
+      activeTab: 'notes',
+      activeChapterId: 'ch1',
+      masteredChapters: [],
+      conqueredPitfalls: [],
+      pitfallFilter: 'all',
+      hideConquered: false,
+      quizMode: 'all',
+      quizIndex: 0,
+      quizAnswered: {}, // { qid: selectedIdx }
+      wrongQuestions: [],
+      masteredFlashcards: [],
+      activeLab: 'pointer'
+    };
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return { ...defaultState };
+        return { ...defaultState, ...JSON.parse(raw) };
+      } catch (e) {
+        return { ...defaultState };
+      }
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {
+        // Ignore storage restrictions in sandboxed iframes
+      }
+    }
+
+    let state = loadState();
+
+    // Flashcard runtime state
+    let fcDeck = [...FLASHCARDS];
+    let fcIndex = 0;
+    let fcFlipped = false;
+
+    // Pointer Lab runtime state
+    let ptrType = 'int';
+    let ptrArr = [10, 20, 30, 40, 50];
+    let ptrIdx = 0;
+    const BASE_ADDR = 1000;
+
+    // Copy Lab runtime state
+    let copyMode = 'shallow'; // 'shallow' | 'deep'
+    let copyStep = 0; // 0: alive, 1: p2 destroyed, 2: p1 destroyed
+
+    // =========================================================================
+    // 3. UTILITIES
+    // =========================================================================
+    function showToast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.remove('hidden', 'toast-enter');
+      void el.offsetWidth;
+      el.classList.add('toast-enter');
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => el.classList.add('hidden'), 2400);
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+    function copyText(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => showToast('代码已复制到剪贴板')).catch(() => fallbackCopy(text));
+      } else {
+        fallbackCopy(text);
+      }
+    }
+
+    function fallbackCopy(text) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast('代码已复制到剪贴板');
+      } catch (e) {
+        showToast('复制失败，请手动选中复制');
+      }
+      document.body.removeChild(ta);
+    }
+
+    function computeOverallProgress() {
+      const total = CHAPTERS.length + PITFALLS.length + FLASHCARDS.length;
+      const done = state.masteredChapters.length + state.conqueredPitfalls.length + state.masteredFlashcards.length;
+      return Math.round((done / total) * 100);
+    }
+
+    function updateHeaderProgress() {
+      const pct = computeOverallProgress();
+      document.getElementById('headerProgressText').textContent = pct + '%';
+      document.getElementById('wrongCountBadge').textContent = state.wrongQuestions.length;
+    }
+
+    // =========================================================================
+    // 4. NAVIGATION & GLOBAL SEARCH
+    // =========================================================================
+    function switchTab(tab) {
+      state.activeTab = tab;
+      saveState();
+
+      document.querySelectorAll('.view-section').forEach(sec => {
+        sec.classList.toggle('hidden', sec.id !== 'view-' + tab);
+      });
+
+      document.querySelectorAll('.nav-tab').forEach(btn => {
+        const active = btn.dataset.tab === tab;
+        btn.className = active
+          ? 'nav-tab px-3.5 py-1.5 rounded-lg text-sm font-semibold transition-all flex items-center gap-1.5 bg-white text-indigo-700 shadow-xs'
+          : 'nav-tab px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 text-slate-600 hover:text-slate-900';
+      });
+
+      document.querySelectorAll('.nav-tab-mobile').forEach(btn => {
+        const active = btn.dataset.tab === tab;
+        btn.className = active
+          ? 'nav-tab-mobile px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap bg-indigo-50 text-indigo-700'
+          : 'nav-tab-mobile px-2.5 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap text-slate-600';
+      });
+
+      if (tab === 'notes') renderNotesView();
+      if (tab === 'pitfalls') renderPitfallsView();
+      if (tab === 'quiz') renderQuizView();
+      if (tab === 'flashcards') renderFlashcardView();
+      if (tab === 'labs') renderLabsView();
+      lucide.createIcons();
+    }
+
+    function handleGlobalSearch(query) {
+      const panel = document.getElementById('searchResultsPanel');
+      const list = document.getElementById('searchResultsList');
+      const title = document.getElementById('searchResultsTitle');
+      const q = query.trim().toLowerCase();
+
+      if (!q) {
+        panel.classList.add('hidden');
+        return;
+      }
+
+      const hits = [];
+      CHAPTERS.forEach(ch => {
+        const text = (ch.title + ' ' + ch.summary + ' ' + JSON.stringify(ch.sections) + ' ' + JSON.stringify(ch.errata)).toLowerCase();
+        if (text.includes(q)) {
+          hits.push({ type: 'chapter', id: ch.id, label: `章节 ${ch.num} · ${ch.title}`, sub: ch.summary });
+        }
+      });
+      PITFALLS.forEach(p => {
+        const text = (p.title + ' ' + p.why + ' ' + p.wrong + ' ' + p.right).toLowerCase();
+        if (text.includes(q)) {
+          hits.push({ type: 'pitfall', id: p.id, label: `${p.isErrata ? '🔴 勘误' : '⚠️ 易错'} · ${p.title}`, sub: p.why });
+        }
+      });
+
+      title.textContent = `找到 ${hits.length} 条与 “${query}” 相关的内容`;
+      if (hits.length === 0) {
+        list.innerHTML = `<div class="col-span-full text-sm text-slate-500 py-3">没有找到匹配内容，试试搜索：指针、深拷贝、const、短路、析构、sizeof。</div>`;
+      } else {
+        list.innerHTML = hits.map((h, i) => `
+          <button data-hit-idx="${i}" class="search-hit-btn text-left p-3 rounded-xl border border-slate-200 hover:border-indigo-400 hover:bg-indigo-50/40 transition-all">
+            <div class="text-xs font-bold text-indigo-700">${escapeHtml(h.label)}</div>
+            <div class="text-xs text-slate-500 mt-1 line-clamp-2">${escapeHtml(h.sub)}</div>
+          </button>
+        `).join('');
+        list.querySelectorAll('.search-hit-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const hit = hits[Number(btn.dataset.hitIdx)];
+            panel.classList.add('hidden');
+            document.getElementById('globalSearchInput').value = '';
+            if (hit.type === 'chapter') {
+              state.activeChapterId = hit.id;
+              switchTab('notes');
+            } else {
+              state.pitfallFilter = 'all';
+              state.hideConquered = false;
+              switchTab('pitfalls');
+              setTimeout(() => {
+                const el = document.getElementById('pitfall-card-' + hit.id);
+                if (el) {
+                  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  el.classList.add('ring-2', 'ring-indigo-500');
+                  setTimeout(() => el.classList.remove('ring-2', 'ring-indigo-500'), 1800);
+                }
+              }, 80);
+            }
+          });
+        });
+      }
+      panel.classList.remove('hidden');
+    }
+
+    // =========================================================================
+    // 5. VIEW 1: NOTES RENDERER (TOC + Page-Flipping Notebook + Inline Exercises)
+    // =========================================================================
+    function goToChapterPage(chapterId, scrollTargetId) {
+      state.activeChapterId = chapterId;
+      saveState();
+      renderNotesView();
+      if (window.innerWidth < 1024) {
+        document.getElementById('chapterSidebar').classList.add('hidden');
+      }
+      if (scrollTargetId) {
+        setTimeout(() => {
+          const target = document.getElementById(scrollTargetId);
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 60);
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    function renderNotesView() {
+      const ch = CHAPTERS.find(c => c.id === state.activeChapterId) || CHAPTERS[0];
+      const chIndex = CHAPTERS.findIndex(c => c.id === ch.id);
+      const isMastered = state.masteredChapters.includes(ch.id);
+      const chExercises = QUIZ_QUESTIONS.filter(q => q.chapterId === ch.id);
+      const chExAnswered = chExercises.filter(q => state.quizAnswered[q.id] !== undefined).length;
+      const chExCorrect = chExercises.filter(q => state.quizAnswered[q.id] === q.answer).length;
+
+      // 1) Two-level interactive Table of Contents in sidebar
+      const listEl = document.getElementById('chapterList');
+      listEl.innerHTML = CHAPTERS.map((item, idx) => {
+        const active = item.id === ch.id;
+        const done = state.masteredChapters.includes(item.id);
+        const exCount = QUIZ_QUESTIONS.filter(q => q.chapterId === item.id).length;
+        return `
+          <div class="rounded-xl overflow-hidden ${active ? 'bg-indigo-50/70 ring-1 ring-indigo-200' : ''}">
+            <button data-chid="${item.id}" class="chapter-btn w-full text-left px-3 py-2.5 rounded-xl transition-all flex items-center justify-between gap-2 ${
+              active ? 'bg-indigo-600 text-white shadow-sm' : 'hover:bg-slate-100 text-slate-700'
+            }">
+              <div class="min-w-0">
+                <div class="text-[11px] font-semibold ${active ? 'text-indigo-200' : 'text-slate-400'}">第 ${idx + 1} 页 · 原笔记 ${item.pages}</div>
+                <div class="text-xs font-bold truncate mt-0.5">${item.title}</div>
+              </div>
+              ${done ? `<i data-lucide="check-circle-2" class="w-4 h-4 shrink-0 ${active ? 'text-emerald-300' : 'text-emerald-500'}"></i>` : ''}
+            </button>
+            ${active ? `
+              <div class="px-2.5 py-2 space-y-1 text-xs">
+                ${item.errata.length > 0 ? `
+                  <button data-anchor="ch-errata-block" class="toc-anchor-btn w-full text-left px-2 py-1.5 rounded-lg text-rose-700 hover:bg-rose-100/70 font-semibold flex items-center gap-1.5 truncate">
+                    <span class="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0"></span>原笔记勘误 (${item.errata.length})
+                  </button>
+                ` : ''}
+                ${item.sections.map((sec, sIdx) => `
+                  <button data-anchor="ch-sec-${sIdx}" class="toc-anchor-btn w-full text-left px-2 py-1.5 rounded-lg text-slate-600 hover:bg-indigo-100/60 hover:text-indigo-800 flex items-center gap-1.5 truncate">
+                    <span class="text-[10px] font-bold text-indigo-500 shrink-0">${sIdx + 1}.</span>
+                    <span class="truncate">${sec.title}</span>
+                  </button>
+                `).join('')}
+                <button data-anchor="ch-exercises-block" class="toc-anchor-btn w-full text-left px-2 py-1.5 rounded-lg text-indigo-700 bg-white/80 hover:bg-indigo-100 font-semibold flex items-center justify-between gap-1 border border-indigo-100 mt-1">
+                  <span class="flex items-center gap-1.5 truncate"><i data-lucide="pen-tool" class="w-3 h-3 shrink-0"></i>本页随堂练习</span>
+                  <span class="text-[10px] px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-700">${chExAnswered}/${exCount}</span>
+                </button>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+
+      listEl.querySelectorAll('.chapter-btn').forEach(btn => {
+        btn.addEventListener('click', () => goToChapterPage(btn.dataset.chid));
+      });
+      listEl.querySelectorAll('.toc-anchor-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const target = document.getElementById(btn.dataset.anchor);
+          if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          if (window.innerWidth < 1024) {
+            document.getElementById('chapterSidebar').classList.add('hidden');
+          }
+        });
+      });
+
+      const doneCount = state.masteredChapters.length;
+      const pct = Math.round((doneCount / CHAPTERS.length) * 100);
+      document.getElementById('chapterMasteryCount').textContent = `${doneCount}/${CHAPTERS.length} 已掌握`;
+      document.getElementById('chapterPercentText').textContent = pct + '%';
+      document.getElementById('chapterProgressBar').style.width = pct + '%';
+
+      const prevCh = chIndex > 0 ? CHAPTERS[chIndex - 1] : null;
+      const nextCh = chIndex < CHAPTERS.length - 1 ? CHAPTERS[chIndex + 1] : null;
+
+      // 2) Main Notebook Page + Inline Practice Exercises
+      const container = document.getElementById('chapterContentContainer');
+      container.innerHTML = `
+        <!-- Top Page-Flipping Toolbar -->
+        <div class="bg-white border border-slate-200 rounded-2xl px-4 py-3 shadow-sm flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-2">
+            <button id="topPrevPageBtn" ${!prevCh ? 'disabled' : ''} class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold disabled:opacity-40 flex items-center gap-1">
+              <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>上一页
+            </button>
+            <div class="flex items-center gap-1">
+              ${CHAPTERS.map((c, idx) => `
+                <button data-page-jump="${c.id}" class="page-pill-btn w-7 h-7 rounded-lg text-xs font-bold transition-all ${
+                  idx === chIndex
+                    ? 'bg-indigo-600 text-white shadow-xs'
+                    : state.masteredChapters.includes(c.id)
+                      ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }" title="第 ${idx + 1} 页：${c.title}">${idx + 1}</button>
+              `).join('')}
+            </div>
+            <button id="topNextPageBtn" ${!nextCh ? 'disabled' : ''} class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold disabled:opacity-40 flex items-center gap-1">
+              下一页<i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-slate-400 hidden sm:inline">第 <strong class="text-slate-700">${chIndex + 1}</strong> / ${CHAPTERS.length} 页（支持 ← → 翻页）</span>
+            <button id="jumpToExercisesBtn" class="px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold flex items-center gap-1">
+              <i data-lucide="pen-tool" class="w-3.5 h-3.5"></i>直达本页练习 (${chExercises.length}题)
+            </button>
+          </div>
+        </div>
+
+        <!-- Notebook Page Wrapper -->
+        <div class="notebook-sheet p-5 sm:p-7 space-y-6 page-turn-anim">
+          <!-- Page Header -->
+          <div class="pb-5 border-b border-slate-100 flex flex-wrap items-start justify-between gap-4">
+            <div class="space-y-1.5">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-xs font-bold">第 ${chIndex + 1} 页 · 模块 ${ch.num}</span>
+                <span class="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 text-xs font-medium">对应原笔记 ${ch.pages}</span>
+                ${ch.errata.length > 0 ? `<span class="px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 text-xs font-bold">含 ${ch.errata.length} 处原笔记勘误</span>` : ''}
+              </div>
+              <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">${ch.title}</h2>
+              <p class="text-sm text-slate-600 leading-relaxed">${ch.summary}</p>
+            </div>
+            <button id="toggleChapterMasteryBtn" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 shrink-0 ${
+              isMastered
+                ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200'
+                : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm'
+            }">
+              <i data-lucide="${isMastered ? 'check-circle-2' : 'circle'}" class="w-4 h-4"></i>
+              ${isMastered ? '本页已掌握' : '标记本页已掌握'}
+            </button>
+          </div>
+
+          <!-- Original Note Errata Banner (if any) -->
+          ${ch.errata.length > 0 ? `
+            <div id="ch-errata-block" class="scroll-mt-20 bg-rose-50/90 border border-rose-200 rounded-2xl p-4 sm:p-5 space-y-3">
+              <div class="flex items-center gap-2 text-rose-800 font-bold text-sm">
+                <i data-lucide="alert-octagon" class="w-4 h-4 text-rose-600"></i>
+                原手写笔记勘误与纠偏（共 ${ch.errata.length} 处）
+              </div>
+              <div class="space-y-2.5">
+                ${ch.errata.map(e => `
+                  <div class="bg-white/90 border border-rose-100 rounded-xl p-3.5 text-xs sm:text-sm">
+                    <div class="font-bold text-rose-700 flex items-center gap-2">
+                      <span class="px-1.5 py-0.5 rounded bg-rose-100 text-rose-700 text-[11px]">${e.page}</span>
+                      ${e.title}
+                    </div>
+                    <p class="text-slate-600 mt-1 leading-relaxed">${e.detail}</p>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          ` : ''}
+
+          <!-- Note Sections -->
+          ${ch.sections.map((sec, idx) => `
+            <div id="ch-sec-${idx}" class="scroll-mt-20 space-y-3.5 ${idx > 0 ? 'pt-5 border-t border-slate-100' : ''}">
+              <h3 class="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+                <span class="w-6 h-6 rounded-lg bg-indigo-50 text-indigo-700 text-xs font-extrabold flex items-center justify-center">${idx + 1}</span>
+                ${sec.title}
+              </h3>
+
+              ${sec.points ? `
+                <ul class="space-y-2.5 text-sm text-slate-700 leading-relaxed">
+                  ${sec.points.map(pt => `
+                    <li class="flex items-start gap-2.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-2 shrink-0"></span>
+                      <span>${pt}</span>
+                    </li>
+                  `).join('')}
+                </ul>
+              ` : ''}
+
+              ${sec.table ? `
+                <div class="overflow-x-auto rounded-xl border border-slate-200">
+                  <table class="w-full text-left border-collapse text-xs sm:text-sm">
+                    <thead>
+                      <tr class="bg-slate-50 border-b border-slate-200 text-slate-700">
+                        ${sec.table.headers.map(h => `<th class="py-2.5 px-3.5 font-bold">${h}</th>`).join('')}
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                      ${sec.table.rows.map(row => `
+                        <tr class="hover:bg-slate-50/70">
+                          ${row.map((cell, ci) => `<td class="py-2.5 px-3.5 ${ci === 0 ? 'font-mono font-semibold text-indigo-700' : 'text-slate-600'}">${cell}</td>`).join('')}
+                        </tr>
+                      `).join('')}
+                    </tbody>
+                  </table>
+                </div>
+              ` : ''}
+
+              ${sec.tip ? `
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-3.5 text-xs sm:text-sm text-amber-900 flex items-start gap-2">
+                  <i data-lucide="lightbulb" class="w-4 h-4 text-amber-600 shrink-0 mt-0.5"></i>
+                  <span>${sec.tip}</span>
+                </div>
+              ` : ''}
+
+              ${sec.code ? `
+                <div class="relative group">
+                  <pre class="code-block"><code>${escapeHtml(sec.code)}</code></pre>
+                  <button data-code-idx="${idx}" class="copy-code-btn absolute top-2.5 right-2.5 px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-slate-200 text-xs font-medium flex items-center gap-1 transition-colors">
+                    <i data-lucide="copy" class="w-3.5 h-3.5"></i>复制
+                  </button>
+                </div>
+              ` : ''}
+            </div>
+          `).join('')}
+
+          <!-- End-of-Page Inline Practice Exercises -->
+          <div id="ch-exercises-block" class="scroll-mt-20 pt-6 border-t-2 border-dashed border-slate-200 space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <h3 class="text-base sm:text-lg font-extrabold text-slate-900 flex items-center gap-2">
+                  <span class="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center"><i data-lucide="pen-tool" class="w-4 h-4"></i></span>
+                  本页随堂练习题（共 ${chExercises.length} 题）
+                </h3>
+                <p class="text-xs text-slate-500 mt-0.5">学完即测，巩固本页易错点；答错会自动收录进「刷题自测 → 错题本」。</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-1 rounded-lg bg-slate-100 text-xs font-bold text-slate-700">
+                  已答 ${chExAnswered}/${chExercises.length} · 答对 <span class="text-emerald-600">${chExCorrect}</span>
+                </span>
+                ${chExAnswered > 0 ? `
+                  <button id="resetChapterExBtn" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-semibold">重做本页</button>
+                ` : ''}
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              ${chExercises.map((q, qIdx) => {
+                const chosen = state.quizAnswered[q.id];
+                const hasAns = chosen !== undefined;
+                return `
+                  <div class="rounded-2xl border border-slate-200 bg-slate-50/60 p-4 sm:p-5 space-y-3">
+                    <div class="flex items-center justify-between gap-2">
+                      <span class="text-xs font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md">练习 ${qIdx + 1} · ${q.topic}</span>
+                      ${hasAns ? (chosen === q.answer
+                        ? '<span class="text-xs font-bold text-emerald-600">✓ 已答对</span>'
+                        : '<span class="text-xs font-bold text-rose-600">✗ 已入错题本</span>') : '<span class="text-xs text-slate-400">点击选项作答</span>'}
+                    </div>
+                    <p class="text-sm sm:text-base font-bold text-slate-900 leading-relaxed">${escapeHtml(q.question)}</p>
+                    ${q.code ? `<pre class="code-block"><code>${escapeHtml(q.code)}</code></pre>` : ''}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      ${q.options.map((opt, oIdx) => {
+                        const letter = ['A', 'B', 'C', 'D'][oIdx];
+                        let cls = 'bg-white border-slate-200 hover:border-indigo-400 hover:bg-indigo-50/40 text-slate-800';
+                        if (hasAns) {
+                          if (oIdx === q.answer) cls = 'bg-emerald-50 border-emerald-500 text-emerald-900 font-semibold';
+                          else if (oIdx === chosen) cls = 'bg-rose-50 border-rose-500 text-rose-900';
+                          else cls = 'bg-white/60 border-slate-100 text-slate-400';
+                        }
+                        return `
+                          <button data-qid="${q.id}" data-opt="${oIdx}" ${hasAns ? 'disabled' : ''} class="inline-ex-opt text-left px-3.5 py-2.5 rounded-xl border-2 transition-all flex items-center gap-2.5 text-xs sm:text-sm ${cls}">
+                            <span class="w-6 h-6 rounded-md bg-white border border-slate-200 flex items-center justify-center text-xs font-bold shrink-0">${letter}</span>
+                            <span class="font-mono sm:font-sans">${escapeHtml(opt)}</span>
+                          </button>
+                        `;
+                      }).join('')}
+                    </div>
+                    ${hasAns ? `
+                      <div class="rounded-xl p-3 text-xs sm:text-sm leading-relaxed border ${chosen === q.answer ? 'bg-emerald-50 border-emerald-200 text-emerald-900' : 'bg-rose-50 border-rose-200 text-rose-900'}">
+                        <strong>解析：</strong>${q.explanation}
+                      </div>
+                    ` : ''}
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        </div>
+
+        <!-- Book-Style Bottom Page Flip Cards -->
+        <div class="grid grid-cols-2 gap-3 pt-1">
+          <button id="prevChapterBtn" ${!prevCh ? 'disabled' : ''} class="text-left p-4 rounded-2xl bg-white border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/30 disabled:opacity-40 transition-all shadow-xs">
+            <div class="text-xs text-slate-400 flex items-center gap-1"><i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>上一页</div>
+            <div class="text-xs sm:text-sm font-bold text-slate-800 truncate mt-1">${prevCh ? `第 ${chIndex} 页 · ${prevCh.title}` : '已是第一页'}</div>
+          </button>
+          <button id="nextChapterBtn" ${!nextCh ? 'disabled' : ''} class="text-right p-4 rounded-2xl bg-white border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/30 disabled:opacity-40 transition-all shadow-xs">
+            <div class="text-xs text-indigo-600 font-semibold flex items-center justify-end gap-1">下一页<i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></div>
+            <div class="text-xs sm:text-sm font-bold text-slate-800 truncate mt-1">${nextCh ? `第 ${chIndex + 2} 页 · ${nextCh.title}` : '已是最后一页'}</div>
+          </button>
+        </div>
+      `;
+
+      // Bind top page-flip controls
+      document.getElementById('topPrevPageBtn').addEventListener('click', () => { if (prevCh) goToChapterPage(prevCh.id); });
+      document.getElementById('topNextPageBtn').addEventListener('click', () => { if (nextCh) goToChapterPage(nextCh.id); });
+      container.querySelectorAll('.page-pill-btn').forEach(btn => {
+        btn.addEventListener('click', () => goToChapterPage(btn.dataset.pageJump));
+      });
+      document.getElementById('jumpToExercisesBtn').addEventListener('click', () => {
+        const el = document.getElementById('ch-exercises-block');
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+
+      document.getElementById('toggleChapterMasteryBtn').addEventListener('click', () => {
+        if (state.masteredChapters.includes(ch.id)) {
+          state.masteredChapters = state.masteredChapters.filter(id => id !== ch.id);
+          showToast('已取消本页掌握标记');
+        } else {
+          state.masteredChapters.push(ch.id);
+          showToast(`太棒了！第 ${chIndex + 1} 页已打卡掌握`);
+        }
+        saveState();
+        updateHeaderProgress();
+        renderNotesView();
+      });
+
+      container.querySelectorAll('.copy-code-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const sec = ch.sections[Number(btn.dataset.codeIdx)];
+          if (sec && sec.code) copyText(sec.code);
+        });
+      });
+
+      // Bind inline chapter exercises
+      container.querySelectorAll('.inline-ex-opt').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const qid = btn.dataset.qid;
+          const picked = Number(btn.dataset.opt);
+          const qObj = QUIZ_QUESTIONS.find(item => item.id === qid);
+          if (!qObj) return;
+          state.quizAnswered[qid] = picked;
+          if (picked !== qObj.answer) {
+            if (!state.wrongQuestions.includes(qid)) state.wrongQuestions.push(qid);
+            showToast('答错了，已自动收入错题本');
+          } else {
+            showToast('回答正确！');
+          }
+          saveState();
+          updateHeaderProgress();
+          renderNotesView();
+        });
+      });
+
+      const resetChExBtn = document.getElementById('resetChapterExBtn');
+      if (resetChExBtn) {
+        resetChExBtn.addEventListener('click', () => {
+          chExercises.forEach(q => { delete state.quizAnswered[q.id]; });
+          saveState();
+          renderNotesView();
+          showToast('已重置本页随堂练习');
+        });
+      }
+
+      document.getElementById('prevChapterBtn').addEventListener('click', () => { if (prevCh) goToChapterPage(prevCh.id); });
+      document.getElementById('nextChapterBtn').addEventListener('click', () => { if (nextCh) goToChapterPage(nextCh.id); });
+
+      lucide.createIcons();
+    }
+
+    // =========================================================================
+    // 6. VIEW 2: PITFALLS RENDERER
+    // =========================================================================
+    function renderPitfallsView() {
+      document.getElementById('pitfallConqueredStat').textContent = `${state.conqueredPitfalls.length} / ${PITFALLS.length}`;
+      document.getElementById('hideConqueredToggle').checked = state.hideConquered;
+
+      document.querySelectorAll('.pitfall-filter-btn').forEach(btn => {
+        const active = btn.dataset.filter === state.pitfallFilter;
+        btn.className = active
+          ? 'pitfall-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold transition-colors bg-indigo-600 text-white'
+          : 'pitfall-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors bg-slate-100 text-slate-600 hover:bg-slate-200';
+      });
+
+      const filtered = PITFALLS.filter(p => {
+        if (state.hideConquered && state.conqueredPitfalls.includes(p.id)) return false;
+        if (state.pitfallFilter === 'all') return true;
+        if (state.pitfallFilter === 'errata') return p.isErrata;
+        return p.category === state.pitfallFilter;
+      });
+
+      const grid = document.getElementById('pitfallsGrid');
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full bg-white border border-slate-200 rounded-2xl p-10 text-center space-y-2">
+            <div class="text-3xl">🎉</div>
+            <div class="font-bold text-slate-800">该分类下的易错点已全部攻克！</div>
+            <p class="text-xs text-slate-500">可以取消勾选「仅看未攻克」或切换其他分类继续复习。</p>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(p => {
+        const conquered = state.conqueredPitfalls.includes(p.id);
+        return `
+          <article id="pitfall-card-${p.id}" class="bg-white border ${conquered ? 'border-emerald-200 bg-emerald-50/20' : 'border-slate-200'} rounded-2xl p-5 shadow-sm flex flex-col justify-between gap-4 transition-all">
+            <div class="space-y-3">
+              <div class="flex items-start justify-between gap-2">
+                <div class="flex flex-wrap items-center gap-1.5">
+                  <span class="px-2 py-0.5 rounded-md text-[11px] font-bold ${
+                    p.isErrata ? 'bg-rose-100 text-rose-700' : 'bg-amber-100 text-amber-800'
+                  }">${p.severity}</span>
+                  <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[11px] font-medium">${p.page}</span>
+                </div>
+                <button data-pid="${p.id}" class="conquer-pitfall-btn px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors ${
+                  conquered
+                    ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
+                    : 'bg-slate-100 text-slate-600 hover:bg-indigo-50 hover:text-indigo-700'
+                }">
+                  ${conquered ? '已攻克 ✓' : '标记攻克'}
+                </button>
+              </div>
+
+              <h3 class="text-base font-bold text-slate-900">${p.title}</h3>
+
+              <div class="grid grid-cols-1 gap-2.5">
+                <div class="rounded-xl bg-rose-950 text-rose-100 p-3 text-xs font-mono overflow-x-auto border-l-4 border-rose-500">
+                  <div class="text-[10px] font-sans font-bold uppercase text-rose-300 mb-1">❌ 易错 / 错误写法</div>
+                  <pre class="whitespace-pre-wrap">${escapeHtml(p.wrong)}</pre>
+                </div>
+                <div class="rounded-xl bg-emerald-950 text-emerald-100 p-3 text-xs font-mono overflow-x-auto border-l-4 border-emerald-500">
+                  <div class="text-[10px] font-sans font-bold uppercase text-emerald-300 mb-1">✅ 正确写法 / 正解</div>
+                  <pre class="whitespace-pre-wrap">${escapeHtml(p.right)}</pre>
+                </div>
+              </div>
+
+              <p class="text-xs sm:text-sm text-slate-600 leading-relaxed bg-slate-50 rounded-xl p-3 border border-slate-100">
+                <strong class="text-slate-800">原因解析：</strong>${p.why}
+              </p>
+            </div>
+          </article>
+        `;
+      }).join('');
+
+      grid.querySelectorAll('.conquer-pitfall-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const pid = btn.dataset.pid;
+          if (state.conqueredPitfalls.includes(pid)) {
+            state.conqueredPitfalls = state.conqueredPitfalls.filter(x => x !== pid);
+          } else {
+            state.conqueredPitfalls.push(pid);
+            showToast('又消灭了一个高频易错点！');
+          }
+          saveState();
+          updateHeaderProgress();
+          renderPitfallsView();
+        });
+      });
+
+      lucide.createIcons();
+    }
+
+    // =========================================================================
+    // 7. VIEW 3: QUIZ ENGINE
+    // =========================================================================
+    function getActiveQuizList() {
+      if (state.quizMode === 'wrong') {
+        return QUIZ_QUESTIONS.filter(q => state.wrongQuestions.includes(q.id));
+      }
+      return QUIZ_QUESTIONS;
+    }
+
+    function renderQuizView() {
+      document.querySelectorAll('.quiz-mode-btn').forEach(btn => {
+        const active = btn.dataset.qmode === state.quizMode;
+        btn.className = active
+          ? 'quiz-mode-btn px-3 py-1.5 rounded-lg text-xs font-bold transition-colors bg-indigo-600 text-white'
+          : 'quiz-mode-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors bg-slate-100 text-slate-600 hover:bg-slate-200';
+      });
+      document.getElementById('wrongCountBadge').textContent = state.wrongQuestions.length;
+
+      const list = getActiveQuizList();
+      const box = document.getElementById('quizContainer');
+
+      if (list.length === 0) {
+        box.innerHTML = `
+          <div class="text-center py-10 space-y-3">
+            <div class="text-4xl">🏆</div>
+            <h3 class="text-lg font-bold text-slate-900">错题本目前是空的！</h3>
+            <p class="text-sm text-slate-500">你还没有做错的题目，切换到「全部题目」开始测验吧。</p>
+            <button id="backToAllQuizBtn" class="px-4 py-2 rounded-xl bg-indigo-600 text-white text-sm font-semibold">刷全部题目</button>
+          </div>
+        `;
+        document.getElementById('backToAllQuizBtn').addEventListener('click', () => {
+          state.quizMode = 'all';
+          state.quizIndex = 0;
+          saveState();
+          renderQuizView();
+        });
+        return;
+      }
+
+      if (state.quizIndex >= list.length) state.quizIndex = 0;
+      const q = list[state.quizIndex];
+      const chosen = state.quizAnswered[q.id];
+      const hasAnswered = chosen !== undefined;
+
+      // Calculate session score
+      const answeredCount = list.filter(item => state.quizAnswered[item.id] !== undefined).length;
+      const correctCount = list.filter(item => state.quizAnswered[item.id] === item.answer).length;
+
+      box.innerHTML = `
+        <div class="flex flex-wrap items-center justify-between gap-2 pb-4 border-b border-slate-100 mb-5">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 text-xs font-bold">第 ${state.quizIndex + 1} / ${list.length} 题</span>
+            <span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 text-xs font-medium">${q.topic}</span>
+          </div>
+          <div class="text-xs font-semibold text-slate-500">
+            本轮已答 ${answeredCount}/${list.length} · 正确率 <span class="text-emerald-600">${answeredCount ? Math.round((correctCount / answeredCount) * 100) : 0}%</span>
+          </div>
+        </div>
+
+        <h3 class="text-base sm:text-lg font-bold text-slate-900 leading-relaxed mb-4">${escapeHtml(q.question)}</h3>
+
+        ${q.code ? `<pre class="code-block mb-5"><code>${escapeHtml(q.code)}</code></pre>` : ''}
+
+        <div class="space-y-2.5 mb-5" id="quizOptionsList">
+          ${q.options.map((opt, idx) => {
+            const letter = ['A', 'B', 'C', 'D'][idx];
+            let style = 'border-slate-200 hover:border-indigo-400 hover:bg-indigo-50/40 text-slate-800';
+            let icon = '';
+            if (hasAnswered) {
+              if (idx === q.answer) {
+                style = 'border-emerald-500 bg-emerald-50 text-emerald-900 font-semibold';
+                icon = '<span class="text-emerald-600 font-bold text-xs">✓ 正确答案</span>';
+              } else if (idx === chosen) {
+                style = 'border-rose-500 bg-rose-50 text-rose-900';
+                icon = '<span class="text-rose-600 font-bold text-xs">✗ 你的选择</span>';
+              } else {
+                style = 'border-slate-100 bg-slate-50/60 text-slate-400';
+              }
+            }
+            return `
+              <button data-opt="${idx}" ${hasAnswered ? 'disabled' : ''} class="quiz-opt-btn w-full text-left px-4 py-3.5 rounded-xl border-2 transition-all flex items-center justify-between gap-3 ${style}">
+                <div class="flex items-center gap-3">
+                  <span class="w-7 h-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-xs font-bold shrink-0">${letter}</span>
+                  <span class="text-sm font-mono sm:font-sans">${escapeHtml(opt)}</span>
+                </div>
+                ${icon}
+              </button>
+            `;
+          }).join('')}
+        </div>
+
+        ${hasAnswered ? `
+          <div class="rounded-xl p-4 mb-5 border ${chosen === q.answer ? 'bg-emerald-50 border-emerald-200 text-emerald-900' : 'bg-rose-50 border-rose-200 text-rose-900'}">
+            <div class="font-bold text-sm mb-1">${chosen === q.answer ? '✅ 回答正确！' : '❌ 回答有误（已加入错题本）'}</div>
+            <p class="text-xs sm:text-sm leading-relaxed">${q.explanation}</p>
+          </div>
+        ` : ''}
+
+        <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+          <button id="prevQuizBtn" ${state.quizIndex === 0 ? 'disabled' : ''} class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-semibold disabled:opacity-40">上一题</button>
+          <div class="flex gap-1 flex-wrap justify-center max-w-xs sm:max-w-md">
+            ${list.map((item, i) => {
+              const ans = state.quizAnswered[item.id];
+              let dot = 'bg-slate-200 text-slate-600';
+              if (ans !== undefined) dot = ans === item.answer ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white';
+              if (i === state.quizIndex) dot += ' ring-2 ring-indigo-500 ring-offset-1';
+              return `<button data-qjump="${i}" class="quiz-jump-btn w-6 h-6 rounded-md text-[10px] font-bold transition-all ${dot}">${i + 1}</button>`;
+            }).join('')}
+          </div>
+          <button id="nextQuizBtn" ${state.quizIndex === list.length - 1 ? 'disabled' : ''} class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold disabled:opacity-40">下一题</button>
+        </div>
+      `;
+
+      box.querySelectorAll('.quiz-opt-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const picked = Number(btn.dataset.opt);
+          state.quizAnswered[q.id] = picked;
+          if (picked !== q.answer) {
+            if (!state.wrongQuestions.includes(q.id)) state.wrongQuestions.push(q.id);
+          } else {
+            // If answered correctly in wrong-question mode, remove from wrong list!
+            if (state.quizMode === 'wrong') {
+              state.wrongQuestions = state.wrongQuestions.filter(id => id !== q.id);
+              showToast('答对了！已从错题本移除');
+            }
+          }
+          saveState();
+          updateHeaderProgress();
+          renderQuizView();
+        });
+      });
+
+      document.getElementById('prevQuizBtn').addEventListener('click', () => {
+        if (state.quizIndex > 0) { state.quizIndex--; saveState(); renderQuizView(); }
+      });
+      document.getElementById('nextQuizBtn').addEventListener('click', () => {
+        if (state.quizIndex < list.length - 1) { state.quizIndex++; saveState(); renderQuizView(); }
+      });
+      box.querySelectorAll('.quiz-jump-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.quizIndex = Number(btn.dataset.qjump);
+          saveState();
+          renderQuizView();
+        });
+      });
+    }
+
+    // =========================================================================
+    // 8. VIEW 4: FLASHCARDS
+    // =========================================================================
+    function rebuildFlashcardDeck() {
+      const filterVal = document.getElementById('flashcardFilter').value;
+      if (filterVal === 'all') {
+        fcDeck = [...FLASHCARDS];
+      } else if (filterVal === 'unmastered') {
+        fcDeck = FLASHCARDS.filter(c => !state.masteredFlashcards.includes(c.id));
+      } else {
+        fcDeck = FLASHCARDS.filter(c => c.cat === filterVal);
+      }
+      fcIndex = 0;
+      fcFlipped = false;
+    }
+
+    function renderFlashcardView() {
+      document.getElementById('flashcardMasteredStat').textContent = `已掌握 ${state.masteredFlashcards.length} / ${FLASHCARDS.length}`;
+      const inner = document.getElementById('flashcardInner');
+      inner.classList.toggle('rotate-y-180', fcFlipped);
+
+      if (fcDeck.length === 0) {
+        document.getElementById('flashcardCounter').textContent = '0 / 0 张';
+        document.getElementById('fcCategoryFront').textContent = '全部完成';
+        document.getElementById('fcStatusBadge').textContent = '🎉';
+        document.getElementById('fcQuestion').textContent = '当前筛选下的闪卡已全部掌握！可切换「全部闪卡」复习。';
+        document.getElementById('fcAnswer').innerHTML = '继续保持！';
+        document.getElementById('fcPageRef').textContent = '';
+        return;
+      }
+
+      if (fcIndex >= fcDeck.length) fcIndex = 0;
+      const card = fcDeck[fcIndex];
+      const isMastered = state.masteredFlashcards.includes(card.id);
+
+      document.getElementById('flashcardCounter').textContent = `第 ${fcIndex + 1} / ${fcDeck.length} 张`;
+      document.getElementById('fcCategoryFront').textContent = card.cat;
+      document.getElementById('fcStatusBadge').innerHTML = isMastered
+        ? '<span class="text-emerald-600 font-bold">✓ 已掌握</span>'
+        : '<span class="text-amber-600 font-semibold">待巩固</span>';
+      document.getElementById('fcQuestion').textContent = card.q;
+      document.getElementById('fcAnswer').innerHTML = card.a;
+      document.getElementById('fcPageRef').textContent = '对应笔记 ' + card.page;
+    }
+
+    // =========================================================================
+    // 9. VIEW 5: VISUAL LABS
+    // =========================================================================
+    function renderLabsView() {
+      document.querySelectorAll('.lab-tab-btn').forEach(btn => {
+        const active = btn.dataset.lab === state.activeLab;
+        btn.className = active
+          ? 'lab-tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-all bg-indigo-600 text-white shadow-sm'
+          : 'lab-tab-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all text-slate-600 hover:bg-slate-100';
+      });
+      document.querySelectorAll('.lab-panel').forEach(p => {
+        p.classList.toggle('hidden', p.id !== 'lab-' + state.activeLab);
+      });
+
+      renderPointerLab();
+      renderCopyLab();
+      renderPrecedenceTable();
+    }
+
+    function getPtrTypeSize() {
+      if (ptrType === 'double') return 8;
+      if (ptrType === 'char') return 1;
+      return 4;
+    }
+
+    function renderPointerLab() {
+      const sz = getPtrTypeSize();
+      const cellsEl = document.getElementById('ptrMemoryCells');
+      cellsEl.innerHTML = ptrArr.map((val, i) => {
+        const addr = BASE_ADDR + i * sz;
+        const isP = i === ptrIdx;
+        const isQ = i === 4;
+        return `
+          <div class="rounded-xl border-2 p-2.5 sm:p-3 text-center transition-all ${
+            isP ? 'border-indigo-600 bg-indigo-50 shadow-sm' : 'border-slate-200 bg-white'
+          }">
+            <div class="text-[10px] font-mono text-slate-400">0x${addr}</div>
+            <div class="text-base sm:text-xl font-mono font-extrabold text-slate-900 my-1">${val}</div>
+            <div class="text-[11px] font-mono text-slate-500">a[${i}]</div>
+            <div class="mt-1.5 flex items-center justify-center gap-1 min-h-[20px]">
+              ${isP ? '<span class="px-1.5 py-0.5 rounded bg-indigo-600 text-white text-[10px] font-bold">p ↑</span>' : ''}
+              ${isQ ? '<span class="px-1.5 py-0.5 rounded bg-rose-500 text-white text-[10px] font-bold">q ↑</span>' : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('ptrStatAddr').textContent = `a[${ptrIdx}] (地址 0x${BASE_ADDR + ptrIdx * sz})`;
+      document.getElementById('ptrStatBytes').textContent = `${ptrIdx} × ${sz} = ${ptrIdx * sz} bytes`;
+      document.getElementById('ptrStatDiff').textContent = `4 - ${ptrIdx} = ${4 - ptrIdx} 个元素`;
+    }
+
+    function runPointerOp(op) {
+      const log = document.getElementById('ptrLastResult');
+      if (op === 'star_p_post') {
+        if (ptrIdx >= 4) {
+          log.innerHTML = '<span class="text-rose-600 font-bold">已到数组末尾 a[4]，再后移将越界！</span> 请先点击 p-- 或重置。';
+          return;
+        }
+        const val = ptrArr[ptrIdx];
+        const oldIdx = ptrIdx;
+        ptrIdx++;
+        log.innerHTML = `执行 <code>val = *p++</code>：先解引用拿到 <strong>a[${oldIdx}] = ${val}</strong> 赋给 <code>val</code>，然后指针 <code>p</code> 后移指向 <strong>a[${ptrIdx}]</strong>（原元素值未变）。`;
+      } else if (op === 'star_pre_p') {
+        if (ptrIdx >= 4) {
+          log.innerHTML = '<span class="text-rose-600 font-bold">已到数组末尾 a[4]，无法先 ++p！</span> 请先点击 p-- 或重置。';
+          return;
+        }
+        ptrIdx++;
+        const val = ptrArr[ptrIdx];
+        log.innerHTML = `执行 <code>val = *++p</code>：<strong>先</strong>将指针 <code>p</code> 后移到 <strong>a[${ptrIdx}]</strong>，再解引用拿到 <strong>${val}</strong> 赋给 <code>val</code>。`;
+      } else if (op === 'paren_star_p_post') {
+        const val = ptrArr[ptrIdx];
+        ptrArr[ptrIdx]++;
+        log.innerHTML = `执行 <code>val = (*p)++</code>：指针 <code>p</code> <strong>原地不动</strong>（仍在 a[${ptrIdx}]），先取原值 <strong>${val}</strong> 给 <code>val</code>，然后把 <strong>a[${ptrIdx}]</strong> 的值加 1 变成 <strong>${ptrArr[ptrIdx]}</strong>！`;
+      } else if (op === 'p_minus') {
+        if (ptrIdx <= 0) {
+          log.innerHTML = '<span class="text-rose-600 font-bold">已在数组首位 a[0]，不能再往前移！</span>';
+          return;
+        }
+        ptrIdx--;
+        log.innerHTML = `执行 <code>p--</code>：指针向前移动 ${getPtrTypeSize()} 字节，当前指向 <strong>a[${ptrIdx}]</strong>。`;
+      }
+      renderPointerLab();
+    }
+
+    function renderCopyLab() {
+      const isShallow = copyMode === 'shallow';
+      document.getElementById('copyShallowBtn').className = isShallow
+        ? 'px-3.5 py-1.5 rounded-lg text-xs font-bold bg-rose-600 text-white shadow-sm'
+        : 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200';
+      document.getElementById('copyDeepBtn').className = !isShallow
+        ? 'px-3.5 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 text-white shadow-sm'
+        : 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200';
+
+      document.getElementById('p2PtrVal').textContent = isShallow ? 'm_Height = 0x0011' : 'm_Height = 0x0022';
+      document.getElementById('p2PtrVal').className = isShallow ? 'font-bold text-rose-600' : 'font-bold text-emerald-600';
+      document.getElementById('heapBlock2').classList.toggle('hidden', isShallow);
+      document.getElementById('heap1Owner').textContent = isShallow ? '由 p1 和 p2 共同指向 ⚠️' : '仅由 p1 独立指向 ✓';
+
+      const stackP1 = document.getElementById('stackP1');
+      const stackP2 = document.getElementById('stackP2');
+      const h1 = document.getElementById('heap1Status');
+      const h2 = document.getElementById('heap2Status');
+      const log = document.getElementById('copySimLog');
+      const stepBtn = document.getElementById('copyStepBtn');
+
+      stackP1.classList.remove('opacity-40', 'border-rose-500');
+      stackP2.classList.remove('opacity-40');
+
+      if (copyStep === 0) {
+        h1.className = 'px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 font-semibold';
+        h1.textContent = '有效 (值: 160)';
+        h2.className = 'px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 font-semibold';
+        h2.textContent = '有效 (值: 160)';
+        log.innerHTML = isShallow
+          ? '浅拷贝模式：<code>p1</code> 和 <code>p2</code> 指向<strong>同一块堆内存 0x0011</strong>。点击右侧按钮开始模拟析构。'
+          : '深拷贝模式：<code>p2</code> 重新 <code>new</code> 了独立堆内存 <strong>0x0022</strong>。点击右侧按钮开始模拟析构。';
+        stepBtn.textContent = '第 1 步：析构 p2 →';
+        stepBtn.disabled = false;
+      } else if (copyStep === 1) {
+        stackP2.classList.add('opacity-40');
+        if (isShallow) {
+          h1.className = 'px-2 py-0.5 rounded bg-slate-200 text-slate-600 font-semibold';
+          h1.textContent = '已被 p2 释放！';
+          log.innerHTML = '⚠️ <code>p2</code> 析构执行 <code>delete 0x0011</code>，堆内存已被回收，但 <code>p1.m_Height</code> 依然指向 0x0011（沦为悬空指针）！';
+        } else {
+          h2.className = 'px-2 py-0.5 rounded bg-slate-200 text-slate-600 font-semibold';
+          h2.textContent = '已安全释放 ✓';
+          log.innerHTML = '✅ <code>p2</code> 析构只释放了自己的 <code>0x0022</code>，<code>p1</code> 的 <code>0x0011</code> 完好无损！';
+        }
+        stepBtn.textContent = '第 2 步：析构 p1 →';
+        stepBtn.disabled = false;
+      } else {
+        stackP2.classList.add('opacity-40');
+        stackP1.classList.add('opacity-40');
+        if (isShallow) {
+          stackP1.classList.add('border-rose-500');
+          h1.className = 'px-2 py-0.5 rounded bg-rose-600 text-white font-bold';
+          h1.textContent = '💥 Double Free 崩溃！';
+          log.innerHTML = '💥 <strong>程序崩溃！</strong><code>p1</code> 析构再次执行 <code>delete 0x0011</code>，对同一块堆内存重复释放！这就是浅拷贝的致命缺陷。';
+        } else {
+          h1.className = 'px-2 py-0.5 rounded bg-slate-200 text-slate-600 font-semibold';
+          h1.textContent = '已安全释放 ✓';
+          h2.className = 'px-2 py-0.5 rounded bg-slate-200 text-slate-600 font-semibold';
+          h2.textContent = '已安全释放 ✓';
+          log.innerHTML = '🎉 <strong>完美结束！</strong><code>p1</code> 安全释放 <code>0x0011</code>，无内存泄漏也无重复释放。';
+        }
+        stepBtn.textContent = '演示完毕';
+        stepBtn.disabled = true;
+      }
+    }
+
+    function renderPrecedenceTable() {
+      const q = (document.getElementById('precSearchInput').value || '').trim().toLowerCase();
+      const tbody = document.getElementById('precTableBody');
+      const rows = PRECEDENCE_DATA.filter(r =>
+        !q || r.ops.toLowerCase().includes(q) || r.name.toLowerCase().includes(q) || r.trap.toLowerCase().includes(q)
+      );
+      tbody.innerHTML = rows.map(r => `
+        <tr class="${r.hot ? 'bg-amber-50/40 hover:bg-amber-50/80' : 'hover:bg-slate-50'}">
+          <td class="py-2.5 px-3 font-bold text-slate-500">${r.level}</td>
+          <td class="py-2.5 px-3 font-mono font-bold text-indigo-700">${escapeHtml(r.ops)}</td>
+          <td class="py-2.5 px-3 font-semibold text-slate-800">${r.name}</td>
+          <td class="py-2.5 px-3 text-slate-500 whitespace-nowrap">${r.assoc}</td>
+          <td class="py-2.5 px-3 text-slate-600">${r.hot ? '<span class="text-rose-600 font-bold">★ </span>' : ''}${escapeHtml(r.trap)}</td>
+        </tr>
+      `).join('');
+    }
+
+    // =========================================================================
+    // 10. PROGRESS MODAL
+    // =========================================================================
+    function openProgressModal() {
+      const body = document.getElementById('progressModalBody');
+      const chPct = Math.round((state.masteredChapters.length / CHAPTERS.length) * 100);
+      const pfPct = Math.round((state.conqueredPitfalls.length / PITFALLS.length) * 100);
+      const fcPct = Math.round((state.masteredFlashcards.length / FLASHCARDS.length) * 100);
+      const qDone = Object.keys(state.quizAnswered).length;
+      const qRight = QUIZ_QUESTIONS.filter(q => state.quizAnswered[q.id] === q.answer).length;
+
+      body.innerHTML = `
+        <div class="space-y-3">
+          <div>
+            <div class="flex justify-between text-xs mb-1"><span class="font-semibold">笔记模块掌握</span><span>${state.masteredChapters.length} / ${CHAPTERS.length} (${chPct}%)</span></div>
+            <div class="h-2 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-indigo-600" style="width:${chPct}%"></div></div>
+          </div>
+          <div>
+            <div class="flex justify-between text-xs mb-1"><span class="font-semibold">易错避坑攻克</span><span>${state.conqueredPitfalls.length} / ${PITFALLS.length} (${pfPct}%)</span></div>
+            <div class="h-2 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-rose-500" style="width:${pfPct}%"></div></div>
+          </div>
+          <div>
+            <div class="flex justify-between text-xs mb-1"><span class="font-semibold">核心闪卡背诵</span><span>${state.masteredFlashcards.length} / ${FLASHCARDS.length} (${fcPct}%)</span></div>
+            <div class="h-2 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-emerald-500" style="width:${fcPct}%"></div></div>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between text-xs">
+            <span class="font-semibold text-slate-700">刷题正确情况</span>
+            <span class="font-bold text-indigo-700">已答 ${qDone} 题 · 答对 ${qRight} 题 · 错题本 ${state.wrongQuestions.length} 题</span>
+          </div>
+        </div>
+      `;
+      document.getElementById('progressModal').classList.remove('hidden');
+    }
+
+    // =========================================================================
+    // 11. EVENT LISTENERS & INIT
+    // =========================================================================
+    function bindEvents() {
+      // Main nav tabs
+      document.querySelectorAll('.nav-tab, .nav-tab-mobile').forEach(btn => {
+        btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+      });
+
+      // Mobile sidebar toggle
+      document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+        if (state.activeTab !== 'notes') switchTab('notes');
+        document.getElementById('chapterSidebar').classList.toggle('hidden');
+      });
+
+      // Global search
+      document.getElementById('globalSearchInput').addEventListener('input', e => handleGlobalSearch(e.target.value));
+      document.getElementById('clearSearchBtn').addEventListener('click', () => {
+        document.getElementById('globalSearchInput').value = '';
+        document.getElementById('searchResultsPanel').classList.add('hidden');
+      });
+
+      // Pitfall filters
+      document.querySelectorAll('.pitfall-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.pitfallFilter = btn.dataset.filter;
+          saveState();
+          renderPitfallsView();
+        });
+      });
+      document.getElementById('hideConqueredToggle').addEventListener('change', e => {
+        state.hideConquered = e.target.checked;
+        saveState();
+        renderPitfallsView();
+      });
+
+      // Quiz controls
+      document.querySelectorAll('.quiz-mode-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.quizMode = btn.dataset.qmode;
+          state.quizIndex = 0;
+          saveState();
+          renderQuizView();
+        });
+      });
+      document.getElementById('restartQuizBtn').addEventListener('click', () => {
+        state.quizAnswered = {};
+        state.quizIndex = 0;
+        saveState();
+        renderQuizView();
+        showToast('已重置本轮测验作答状态');
+      });
+
+      // Flashcard controls
+      document.getElementById('flashcardStage').addEventListener('click', () => {
+        fcFlipped = !fcFlipped;
+        renderFlashcardView();
+      });
+      document.getElementById('prevCardBtn').addEventListener('click', () => {
+        if (fcDeck.length === 0) return;
+        fcIndex = (fcIndex - 1 + fcDeck.length) % fcDeck.length;
+        fcFlipped = false;
+        renderFlashcardView();
+      });
+      document.getElementById('nextCardBtn').addEventListener('click', () => {
+        if (fcDeck.length === 0) return;
+        fcIndex = (fcIndex + 1) % fcDeck.length;
+        fcFlipped = false;
+        renderFlashcardView();
+      });
+      document.getElementById('markMasteredBtn').addEventListener('click', () => {
+        if (fcDeck.length === 0) return;
+        const id = fcDeck[fcIndex].id;
+        if (!state.masteredFlashcards.includes(id)) state.masteredFlashcards.push(id);
+        saveState();
+        updateHeaderProgress();
+        if (document.getElementById('flashcardFilter').value === 'unmastered') {
+          rebuildFlashcardDeck();
+        } else {
+          fcIndex = (fcIndex + 1) % fcDeck.length;
+        }
+        fcFlipped = false;
+        renderFlashcardView();
+        showToast('已标记掌握，继续下一张！');
+      });
+      document.getElementById('markReviewBtn').addEventListener('click', () => {
+        if (fcDeck.length === 0) return;
+        const id = fcDeck[fcIndex].id;
+        state.masteredFlashcards = state.masteredFlashcards.filter(x => x !== id);
+        saveState();
+        updateHeaderProgress();
+        fcIndex = (fcIndex + 1) % fcDeck.length;
+        fcFlipped = false;
+        renderFlashcardView();
+      });
+      document.getElementById('flashcardFilter').addEventListener('change', () => {
+        rebuildFlashcardDeck();
+        renderFlashcardView();
+      });
+      document.getElementById('shuffleCardsBtn').addEventListener('click', () => {
+        for (let i = fcDeck.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [fcDeck[i], fcDeck[j]] = [fcDeck[j], fcDeck[i]];
+        }
+        fcIndex = 0;
+        fcFlipped = false;
+        renderFlashcardView();
+        showToast('已随机打乱闪卡顺序');
+      });
+
+      // Keyboard shortcuts for notebook page-flipping & flashcards
+      document.addEventListener('keydown', e => {
+        if (document.activeElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
+        if (state.activeTab === 'notes') {
+          const idx = CHAPTERS.findIndex(c => c.id === state.activeChapterId);
+          if (e.code === 'ArrowRight' && idx < CHAPTERS.length - 1) {
+            goToChapterPage(CHAPTERS[idx + 1].id);
+          } else if (e.code === 'ArrowLeft' && idx > 0) {
+            goToChapterPage(CHAPTERS[idx - 1].id);
+          }
+          return;
+        }
+        if (state.activeTab !== 'flashcards') return;
+        if (e.code === 'Space') {
+          e.preventDefault();
+          fcFlipped = !fcFlipped;
+          renderFlashcardView();
+        } else if (e.code === 'ArrowRight') {
+          document.getElementById('nextCardBtn').click();
+        } else if (e.code === 'ArrowLeft') {
+          document.getElementById('prevCardBtn').click();
+        }
+      });
+
+      // Lab tabs & controls
+      document.querySelectorAll('.lab-tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.activeLab = btn.dataset.lab;
+          saveState();
+          renderLabsView();
+        });
+      });
+      document.getElementById('ptrTypeSelect').addEventListener('change', e => {
+        ptrType = e.target.value;
+        renderPointerLab();
+      });
+      document.getElementById('ptrResetBtn').addEventListener('click', () => {
+        ptrArr = [10, 20, 30, 40, 50];
+        ptrIdx = 0;
+        document.getElementById('ptrLastResult').textContent = '已重置数组与指针 p（重新指向 a[0]）。';
+        renderPointerLab();
+      });
+      document.querySelectorAll('.ptr-op-btn').forEach(btn => {
+        btn.addEventListener('click', () => runPointerOp(btn.dataset.ptrop));
+      });
+
+      document.getElementById('copyShallowBtn').addEventListener('click', () => {
+        copyMode = 'shallow'; copyStep = 0; renderCopyLab();
+      });
+      document.getElementById('copyDeepBtn').addEventListener('click', () => {
+        copyMode = 'deep'; copyStep = 0; renderCopyLab();
+      });
+      document.getElementById('copyStepBtn').addEventListener('click', () => {
+        if (copyStep < 2) { copyStep++; renderCopyLab(); }
+      });
+      document.getElementById('copyResetBtn').addEventListener('click', () => {
+        copyStep = 0; renderCopyLab();
+      });
+
+      document.getElementById('precSearchInput').addEventListener('input', renderPrecedenceTable);
+
+      // Progress modal
+      document.getElementById('progressSummaryBtn').addEventListener('click', openProgressModal);
+      document.getElementById('closeProgressModal').addEventListener('click', () => document.getElementById('progressModal').classList.add('hidden'));
+      document.getElementById('closeProgressModalBtn').addEventListener('click', () => document.getElementById('progressModal').classList.add('hidden'));
+      document.getElementById('resetAllProgressBtn').addEventListener('click', () => {
+        state = { ...defaultState };
+        saveState();
+        updateHeaderProgress();
+        document.getElementById('progressModal').classList.add('hidden');
+        switchTab(state.activeTab);
+        showToast('已清空所有复习进度');
+      });
+    }
+
+    // Boot
+    bindEvents();
+    updateHeaderProgress();
+    switchTab(state.activeTab);
+  </script>
+</body>
+</html>
